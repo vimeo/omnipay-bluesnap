@@ -409,7 +409,8 @@ class Response extends AbstractResponse
             // grab all the custom parameters
             foreach ($row as $field => $value) {
                 if (strpos($field, 'Custom Field') !== false && $value !== '') {
-                    $index = explode(' ', $field)[2];
+                    $parts = explode(' ', $field);
+                    $index = $parts[2];
                     $params['customParameter' . $index] = $value;
                 }
             }
