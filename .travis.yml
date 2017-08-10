@@ -25,9 +25,3 @@ matrix:
 install: composer install
 script: make $TEST_SUITE
 dist: precise
-notifications:
-  email: false
-  slack:
-    rooms:
-      secure: Lt+vBT6MMM0MQSmkdBRlr0LqhA6ZB+sJJm0AkwOMWCIWNa3GSTnPztOvy3+G/mEnpQaXFHwctu4vuDNi/tXaIGndKgFjrmfkNS+ZMGWoQrxe3hjY4jZUSPhOJldoD0StER7ka0tf0frPQKd3baRV5JBr2KH1O8sZ3JlP/RCO3HKXL50VSYNA0oXJQmJocazqQQT0BWO4oQLHz2XtNLNQMJBG+zhN8tDvnqkDlUhuO0INHkBvRvmqiQ5dN25IR5OemRgrVrYWZzejfoxzTONXB+9SlBU9zwphvqTEwiHw9xE1VQDIoCv9o13y9qsS7xt2ojIMScWWJioaq03uPy/vI+tnT98Oaa1tJGDQkdbN83Am28KDAY5BA6445RSuyNPGoQXoHtzqFLBpPV+xzwMb+gBYPxQ71U3YFkFavwlHvEPUU/wslTdFkTHbRXXEuRgYeVpH7O3ZbxW3xRnWwzWPB7SXcb6CkMmX+ByuyS5x4The59Y5AvYjp5fGlHZgv8aqhqOPWz8PdEj5qqK6+2VCsVuwU55hmS4zATZjPGyZLqFnOpSBw5raQq0iSeSKoq683p4iCGWoiUYdaXi+DcWjfJCo4UbbGvWSbTzLeRkEA44bdY3Noeg8dkccfaOqZQF/FoVMhD04WNkmn2int4gvlRHF9RbHjrah+gaRAxLSFvk=
-    on_pull_requests: false
