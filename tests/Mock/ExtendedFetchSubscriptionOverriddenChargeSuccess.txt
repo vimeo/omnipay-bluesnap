@@ -1,0 +1,38 @@
+HTTP/1.1 200 OK
+Date: Wed, 26 Apr 2017 16:26:23 GMT
+Server: BlueSnap-Sandbox-UK
+Set-Cookie: JSESSIONID=07DB2D2D2C9B5821247DA007DAF2DAC2; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+F5: /Common/Sandbox-vlan10-https 10.11.10.150%10 443
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<subscription xmlns="http://ws.plimus.com">
+  <subscription-id>[SUBSCRIPTION_REFERENCE]</subscription-id>
+  <status>A</status>
+  <underlying-sku-id>1234567</underlying-sku-id>
+  <shopper-id>[CUSTOMER_REFERENCE]</shopper-id>
+  <credit-card>
+    <card-last-four-digits>0000</card-last-four-digits>
+    <card-type>JCB</card-type>
+  </credit-card>
+  <catalog-recurring-charge>
+    <currency>USD</currency>
+    <amount>200.00</amount>
+  </catalog-recurring-charge>
+  <override-recurring-charge>
+    <currency>[CURRENCY]</currency>
+    <amount>[AMOUNT]</amount>
+  </override-recurring-charge>
+  <charge-frequency>ANNUALLY</charge-frequency>
+  <next-charge-date>[NEXT_CHARGE_DATE]</next-charge-date>
+  <auto-renew>true</auto-renew>
+  <last-charge-result>
+    <result-code>SUCCESS</result-code>
+  </last-charge-result>
+  <subscription-charges>
+    <url>https://sandbox.bluesnap.com:443/services/2/subscriptions/[SUBSCRIPTION_REFERENCE]/subscription-charges/[SUBSCRIPTION_CHARGE_REFERENCE]</url>
+  </subscription-charges>
+</subscription>

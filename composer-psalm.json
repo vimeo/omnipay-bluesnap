@@ -1,0 +1,34 @@
+{
+    "name": "vimeo/omnipay-bluesnap",
+    "type": "library",
+    "description": "BlueSnap driver for the Omnipay payment processing library",
+    "keywords": [
+        "gateway",
+        "merchant",
+        "omnipay",
+        "pay",
+        "payment",
+        "bluesnap"
+    ],
+    "homepage": "https://github.com/vimeo/omnipay-bluesnap",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicky Robinson",
+            "email": "ncalebrobinson@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\BlueSnap\\Test\\" : "tests/",
+            "Omnipay\\BlueSnap\\" : "src/"
+        }
+    },
+    "require": {
+        "omnipay/common": "~2.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "~2.0",
+        "vimeo/psalm": "0.3.*"
+    }
+}

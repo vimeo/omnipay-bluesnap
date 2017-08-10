@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<psalm
+    name="Psalm for BlueSnap Omnipay driver"
+    stopOnFirstError="false"
+    useDocblockTypes="true"
+    strictBinaryOperands="true"
+    totallyTyped="true"
+    rememberPropertyAssignmentsAfterCall="false"
+    >
+  <projectFiles>
+    <directory name="src" />
+    <directory name="tests" />
+    <directory name="psalm_plugins" />
+  </projectFiles>
+
+  <fileExtensions>
+    <extension name=".php" />
+  </fileExtensions>
+
+  <plugins>
+    <plugin filename="psalm_plugins/StringChecker.php" />
+  </plugins>
+
+  <issueHandlers>
+    <MissingConstructor>
+      <errorLevel type="suppress">
+        <directory name="tests" />
+      </errorLevel>
+    </MissingConstructor>
+    <PropertyNotSetInConstructor errorLevel="suppress" />
+  </issueHandlers>
+
+  <mockClasses>
+    <class name="Mockery\MockInterface" />
+  </mockClasses>
+</psalm>

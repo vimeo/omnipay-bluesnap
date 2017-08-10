@@ -1,0 +1,17 @@
+HTTP/1.1 400 Bad Request
+Date: Tue, 25 Apr 2017 17:41:49 GMT
+Server: BlueSnap-Sandbox-UK
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 341
+Connection: close
+Content-Type: application/xml
+F5: /Common/Sandbox-vlan10-https 10.11.10.150%10 443
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>ENCRYPTION_PASSWORD_REQUIRED</error-name>
+    <description>Parameter Encryption service failed due to problematic input. Missing Data Protection Key: please define it in the Console and try again.</description>
+  </message>
+</messages>

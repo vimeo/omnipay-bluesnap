@@ -1,0 +1,41 @@
+HTTP/1.1 200 OK
+Date: Mon, 17 Apr 2017 21:55:18 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<subscription xmlns="http://ws.plimus.com">
+  <subscription-id>[SUBSCRIPTION_REFERENCE]</subscription-id>
+  <status>[STATUS]</status>
+  <underlying-sku-id>[PLAN_REFERENCE]</underlying-sku-id>
+  <shopper-id>[CUSTOMER_REFERENCE]</shopper-id>
+  <credit-card>
+    <card-last-four-digits>[CARD_LAST_FOUR]</card-last-four-digits>
+    <card-type>[CARD_BRAND]</card-type>
+  </credit-card>
+  <catalog-recurring-charge>
+    <currency>[CURRENCY]</currency>
+    <amount>[AMOUNT]</amount>
+  </catalog-recurring-charge>
+  <charge-frequency>ANNUALLY</charge-frequency>
+  <next-charge-date>[NEXT_CHARGE_DATE]</next-charge-date>
+  <auto-renew>true</auto-renew>
+  <last-charge-result>
+    <result-code>SUCCESS</result-code>
+  </last-charge-result>
+  <subscription-charges>
+    <subscription-charge>
+         <charge-info />
+         <charge-invoice-info>
+            <date-created>[DATE_CREATED]</date-created>
+            <invoice-id>[TRANSACTION_REFERENCE]</invoice-id>
+            <invoice-amount>[CHARGE_AMOUNT]</invoice-amount>
+            <invoice-currency>[CHARGE_CURRENCY]</invoice-currency>
+         </charge-invoice-info>
+      </subscription-charge>
+  </subscription-charges>
+</subscription>

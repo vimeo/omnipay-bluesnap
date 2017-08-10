@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Date: Fri, 28 Apr 2017 18:27:10 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<param-decryption xmlns="http://ws.plimus.com">
+  <decrypted-token>[PARAM_1]&#x3d;[VALUE_1]&#x26;[PARAM_2]&#x3d;[VALUE_2]</decrypted-token>
+</param-decryption>

@@ -1,0 +1,17 @@
+HTTP/1.1 400 Bad Request
+Date: Mon, 01 May 2017 17:08:13 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 264
+Connection: close
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>INVOICE_ALREADY_FULLY_REFUNDED</error-name>
+    <code>14022</code>
+    <description>Invoice has already been fully refunded.</description>
+  </message>
+</messages>

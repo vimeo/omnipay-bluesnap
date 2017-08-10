@@ -1,0 +1,69 @@
+HTTP/1.1 200 OK
+Date: Thu, 13 Apr 2017 18:11:22 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<shopper xmlns="http://ws.plimus.com">
+  <shopper-info>
+    <shopper-id>[CUSTOMER_REFERENCE]</shopper-id>
+    <shopper-contact-info>
+      <first-name>First</first-name>
+      <last-name>Last</last-name>
+      <email>test&#x40;example.org</email>
+      <zip>160-0000</zip>
+      <country>jp</country>
+    </shopper-contact-info>
+    <shipping-contact-info>
+      <first-name>First</first-name>
+      <last-name>Last</last-name>
+      <zip>160-0000</zip>
+      <country>jp</country>
+    </shipping-contact-info>
+    <invoice-contacts-info>
+      <invoice-contact-info>
+        <default>true</default>
+        <first-name>First</first-name>
+        <last-name>Last</last-name>
+        <email>test&#x40;example.org</email>
+        <zip>160-0000</zip>
+        <country>jp</country>
+      </invoice-contact-info>
+    </invoice-contacts-info>
+    <payment-info>
+      <credit-cards-info>
+        <credit-card-info>
+          <billing-contact-info>
+            <first-name>[FIRST_NAME]</first-name>
+            <last-name>[LAST_NAME]</last-name>
+            <zip>[POSTCODE]</zip>
+            <country>[COUNTRY]</country>
+          </billing-contact-info>
+          <credit-card>
+            <card-last-four-digits>[CARD_LAST_FOUR]</card-last-four-digits>
+            <card-type>[CARD_BRAND]</card-type>
+            <card-sub-type>CREDIT</card-sub-type>
+            <expiration-month>[EXPIRY_MONTH]</expiration-month>
+            <expiration-year>[EXPIRY_YEAR]</expiration-year>
+          </credit-card>
+          <processing-info>
+            <cvv-response-code>ND</cvv-response-code>
+            <avs-response-code-zip>U</avs-response-code-zip>
+            <avs-response-code-address>U</avs-response-code-address>
+            <avs-response-code-name>U</avs-response-code-name>
+          </processing-info>
+        </credit-card-info>
+      </credit-cards-info>
+      <ecps-info/>
+      <balance/>
+    </payment-info>
+    <store-id>12345</store-id>
+    <shopper-currency>JPY</shopper-currency>
+    <locale>en</locale>
+    <permitted-future-charges>false</permitted-future-charges>
+  </shopper-info>
+</shopper>

@@ -1,0 +1,15 @@
+HTTP/1.1 403 Forbidden
+Date: Mon, 24 Apr 2017 17:20:56 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 280
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>USER_NOT_AUTHORIZED</error-name>
+    <description>User API_1234567890123456789012 is not authorized to update subscription ID [SUBSCRIPTION_REFERENCE].</description>
+  </message>
+</messages>

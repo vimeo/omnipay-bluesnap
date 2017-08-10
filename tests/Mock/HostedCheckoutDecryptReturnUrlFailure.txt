@@ -1,0 +1,16 @@
+HTTP/1.1 400 Bad Request
+Date: Fri, 28 Apr 2017 18:27:27 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 374
+Connection: close
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>INVALID_ENCRYPTION_TOKEN_OR_PASSWORD</error-name>
+    <description>Parameter Decryption service failed due to problematic input. We recommend checking the parameter-encyption token input and try again or contact merchant support.</description>
+  </message>
+</messages>

@@ -1,0 +1,7 @@
+HTTP/1.1 204 No Content
+Date: Wed, 26 Apr 2017 16:25:39 GMT
+Server: BlueSnap-Sandbox-UK
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 0
+F5: /Common/Sandbox-vlan10-https 10.11.10.50%10 443
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains

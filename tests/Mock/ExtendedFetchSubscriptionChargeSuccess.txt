@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+Date: Thu, 20 Apr 2017 19:25:52 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<subscription-charge xmlns="http://ws.plimus.com">
+  <charge-info/>
+  <charge-invoice-info>
+    <date-created>[DATE_CREATED]</date-created>
+    <invoice-id>[TRANSACTION_REFERENCE]</invoice-id>
+    <invoice-amount>[AMOUNT]</invoice-amount>
+    <invoice-currency>[CURRENCY]</invoice-currency>
+  </charge-invoice-info>
+</subscription-charge>

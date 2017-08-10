@@ -1,0 +1,108 @@
+HTTP/1.1 200 OK
+Date: Fri, 28 Apr 2017 19:01:26 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Transfer-Encoding: chunked
+Content-Type: application/xml
+Vary: Accept-Encoding
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<order xmlns="http://ws.plimus.com">
+  <order-id>1234567</order-id>
+  <ordering-shopper>
+    <shopper-id>[CUSTOMER_REFERENCE]</shopper-id>
+  </ordering-shopper>
+  <cart>
+    <charged-currency>USD</charged-currency>
+    <cart-item>
+      <sku>
+        <sku-id>1234567</sku-id>
+        <sku-name>Product Name</sku-name>
+      </sku>
+      <quantity>1</quantity>
+      <url>https://sandbox.bluesnap.com:443/services/2/subscriptions/[SUBSCRIPTION_REFERENCE]</url>
+      <item-sub-total>123.12</item-sub-total>
+    </cart-item>
+    <tax>0.00</tax>
+    <tax-rate>0</tax-rate>
+    <total-cart-cost>123.12</total-cart-cost>
+  </cart>
+  <post-sale-info>
+    <invoices>
+      <invoice>
+        <invoice-id>12345678</invoice-id>
+        <url>https://sandbox.bluesnap.com/jsp/show_invoice.jsp?ref=1234567890ABCDEF1234567890ABCDEF</url>
+        <financial-transactions>
+          <financial-transaction>
+            <status>Approved</status>
+            <date-due>21-Apr-17</date-due>
+            <date-created>21-Apr-17</date-created>
+            <amount>123.23</amount>
+            <currency>USD</currency>
+            <soft-descriptor>BLS*Merchant Name</soft-descriptor>
+            <payment-method>Credit Card</payment-method>
+            <target-balance>PLIMUS_ACCOUNT</target-balance>
+            <credit-card>
+              <card-last-four-digits>0000</card-last-four-digits>
+              <card-type>JCB</card-type>
+              <card-sub-type>CREDIT</card-sub-type>
+              <expiration-month>2</expiration-month>
+              <expiration-year>2019</expiration-year>
+            </credit-card>
+            <paypal-transaction-data/>
+            <invoice-contact-info>
+              <first-name>First</first-name>
+              <last-name>Last</last-name>
+              <email>test&#x40;example.org</email>
+              <country>jp</country>
+            </invoice-contact-info>
+            <skus>
+              <sku>
+                <sku-id>1234567</sku-id>
+              </sku>
+            </skus>
+          </financial-transaction>
+        </financial-transactions>
+      </invoice>
+      <invoice>
+        <invoice-id>[TRANSACTION_REFERENCE]</invoice-id>
+        <url>https://sandbox.bluesnap.com/jsp/show_invoice.jsp?ref=1234567890ABCDEF1234567890ABCDEF</url>
+        <financial-transactions>
+          <financial-transaction>
+            <status>Approved</status>
+            <date-due>21-Apr-17</date-due>
+            <date-created>[DATE_CREATED]</date-created>
+            <amount>[AMOUNT]</amount>
+            <currency>[CURRENCY]</currency>
+            <soft-descriptor>BLS*Merchant Name</soft-descriptor>
+            <payment-method>Credit Card</payment-method>
+            <target-balance>PLIMUS_ACCOUNT</target-balance>
+            <credit-card>
+              <card-last-four-digits>0000</card-last-four-digits>
+              <card-type>JCB</card-type>
+              <card-sub-type>CREDIT</card-sub-type>
+              <expiration-month>2</expiration-month>
+              <expiration-year>2019</expiration-year>
+            </credit-card>
+            <paypal-transaction-data/>
+            <invoice-contact-info>
+              <first-name>First</first-name>
+              <last-name>Last</last-name>
+              <email>test&#x40;example.org</email>
+              <country>jp</country>
+            </invoice-contact-info>
+            <skus>
+              <sku>
+                <sku-id>1234567</sku-id>
+              </sku>
+            </skus>
+          </financial-transaction>
+        </financial-transactions>
+      </invoice>
+    </invoices>
+  </post-sale-info>
+  <fulfillment>
+    <license-keys/>
+  </fulfillment>
+</order>

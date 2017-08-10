@@ -1,0 +1,55 @@
+HTTP/1.1 200 OK
+Date: Thu, 27 Apr 2017 17:54:23 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+page-size: 5000
+total-row-count: 3
+start-row: 1
+Content-Length: 1165
+Vary: Accept-Encoding
+Content-Type: application/json;charset=utf-8
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+{
+    "data": [
+        {
+            "Invoice ID": "1234567890",
+            "Subscription ID": "[SUBSCRIPTION_REFERENCE_1]",
+            "First Name": "First",
+            "Last Name": "Last",
+            "Email Address": "test@example.com",
+            "Product Name": "Product Name",
+            "Contract Name": "Contract Name",
+            "Price (Auth. Currency)": "[AMOUNT_1]",
+            "Auth. Currency": "[CURRENCY_1]",
+            "Last Charge Date": "04/27/2017",
+            "Next Charge Date": "06/01/2019",
+            "PayPal Subscription ID": "",
+            "Vendor ID": "",
+            "Vendor Name": ""
+        },
+        {
+            "Invoice ID": "1234567899",
+            "Subscription ID": "[SUBSCRIPTION_REFERENCE_2]",
+            "First Name": "First",
+            "Last Name": "Last",
+            "Email Address": "test@example.org",
+            "Product Name": "Product Name",
+            "Contract Name": "Contract Name",
+            "Price (Auth. Currency)": "[AMOUNT_2]",
+            "Auth. Currency": "[CURRENCY_2]",
+            "Last Charge Date": "04/17/2017",
+            "Next Charge Date": "04/26/2017",
+            "PayPal Subscription ID": "",
+            "Vendor ID": "",
+            "Vendor Name": ""
+        }
+    ],
+    "title": "Active Subscriptions",
+    "params": [
+        {
+            "name": "Merchant Id",
+            "value": "123456"
+        }
+    ]
+}

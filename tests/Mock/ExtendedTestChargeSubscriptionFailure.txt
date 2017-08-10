@@ -1,0 +1,17 @@
+HTTP/1.1 400 Bad Request
+Date: Fri, 28 Apr 2017 14:44:33 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 280
+Connection: close
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>SERVER_GENERAL_FAILURE</error-name>
+    <code>10000</code>
+    <description>Call to runSpecificSubscription failed, subscriptionId [SUBSCRIPTION_REFERENCE].</description>
+  </message>
+</messages>

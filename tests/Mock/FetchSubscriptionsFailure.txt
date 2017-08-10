@@ -1,0 +1,17 @@
+HTTP/1.1 400 Bad Request
+Date: Thu, 27 Apr 2017 16:16:06 GMT
+Server: Apache
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+Content-Length: 225
+Connection: close
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages xmlns="http://ws.plimus.com">
+  <message>
+    <error-name>INVALID_INPUT</error-name>
+    <code>21001</code>
+    <description>Invalid Date Range</description>
+  </message>
+</messages>

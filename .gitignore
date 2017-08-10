@@ -1,0 +1,12 @@
+# Files created by OSX
+._*
+.DS_Store
+
+# Emacs back up files
+*~
+*#
+
+composer.lock
+composer-psalm.lock
+composer.phar
+/vendor
