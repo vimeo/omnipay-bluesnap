@@ -24,6 +24,7 @@ matrix:
         - COMPOSER='composer-psalm.json'
 install: composer install
 script: make $TEST_SUITE
+dist: precise
 notifications:
   email: false
   slack:
