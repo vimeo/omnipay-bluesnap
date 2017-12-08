@@ -15,6 +15,7 @@ class MockPlugin extends \Guzzle\Plugin\Mock\MockPlugin
      *
      * @param string $path File to retrieve a mock response from
      * @param array<string, string> $substitutions default array()
+     * @psalm-suppress ImplementedReturnTypeMismatch
      * @return Response|false
      * @throws InvalidArgumentException if the file is not found
      */

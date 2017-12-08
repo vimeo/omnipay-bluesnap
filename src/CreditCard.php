@@ -10,7 +10,6 @@ class CreditCard extends \Omnipay\Common\CreditCard
     /**
      * Gets the card brand. Returns the brand that was set if one was set,
      * otherwise determines the brand from the card number.
-     *
      * @return string|null
      */
     public function getBrand()

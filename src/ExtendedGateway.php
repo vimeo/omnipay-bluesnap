@@ -77,13 +77,13 @@ class ExtendedGateway extends Gateway
      * parameters passed.
      *
      * @param array $parameters
-     * @return \Omnipay\BlueSnap\Message\AbstractRequest
+     * @return \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
      */
     public function fetchSubscriptions(array $parameters = array())
     {
         if (isset($parameters['customerReference'])) {
             /**
-             * @var \Omnipay\BlueSnap\Message\AbstractRequest
+             * @var \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
              */
             return $this->createRequest(
                 '\Omnipay\BlueSnap\Message\ExtendedFetchSubscriptionsRequest',

@@ -88,8 +88,8 @@ class ExtendedFetchTransactionRequestTest extends TestCase
         $fakeCard = $this->faker->card();
         $cardBrand = $fakeCard->getBrand();
         $cardLastFour = $fakeCard->getNumberLastFour();
-        $expiryMonth = $fakeCard->getExpiryMonth();
-        $expiryYear = $fakeCard->getExpiryYear();
+        $expiryMonth = (string) $fakeCard->getExpiryMonth();
+        $expiryYear = (string) $fakeCard->getExpiryYear();
         $firstName = $fakeCard->getFirstName();
         $lastName = $fakeCard->getLastName();
         $email = $fakeCard->getEmail();

@@ -201,7 +201,7 @@ class FetchCanceledSubscriptionsRequestTest extends TestCase
         $this->assertFalse($response->isRedirect());
         $this->assertSame('200', $response->getCode());
         $subscriptions = $response->getSubscriptions();
-        $this->assertSame(2, count($subscriptions));
+        $this->assertCount(2, $subscriptions);
         if ($subscriptions) {
             foreach ($subscriptions as $i => $subscription) {
                 $fakeSubscription = $fakeSubscriptions[intval($i) + 1];

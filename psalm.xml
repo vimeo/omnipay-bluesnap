@@ -28,6 +28,7 @@
       </errorLevel>
     </MissingConstructor>
     <PropertyNotSetInConstructor errorLevel="suppress" />
+    <ImplementedReturnTypeMismatch errorLevel="suppress" />
   </issueHandlers>
 
   <mockClasses>

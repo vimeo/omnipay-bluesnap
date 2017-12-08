@@ -49,6 +49,7 @@ class TestCase extends \Omnipay\Tests\TestCase
      *
      * @param string $path
      * @param array<string, string> $substitutions
+     * @psalm-suppress ImplementedReturnTypeMismatch
      * @return Response|false
      */
     public function getMockHttpResponse($path, $substitutions = array())
@@ -85,9 +86,11 @@ class TestCase extends \Omnipay\Tests\TestCase
      * then the function will replace all instances of '[NAME]' in the
      * response with 'Fake Name'. Substitutions are not required.
      *
-     * @param array<string>|string $paths
+     * @param array<string, string>|string $paths
      * @param array<string, string> $substitutions
      *
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedMethodCall
      * @return MockPlugin
      */
     public function setMockHttpResponse($paths, $substitutions = array())
