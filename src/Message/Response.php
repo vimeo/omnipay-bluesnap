@@ -389,11 +389,10 @@ class Response extends AbstractResponse
 
     /**
      * @return array<Transaction>|null
-     * @psalm-suppress PossiblyInvalidArrayOffset // Could not verify that data['data'] was set
      */
     public function getTransactions()
     {
-        if (!isset($this->data['data'])) {
+        if (!is_array($this->data) || !isset($this->data['data'])) {
             return null;
         }
         $transactions = array();
