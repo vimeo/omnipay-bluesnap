@@ -88,8 +88,8 @@ class ExtendedFetchTransactionRequestTest extends TestCase
         $fakeCard = $this->faker->card();
         $cardBrand = $fakeCard->getBrand();
         $cardLastFour = $fakeCard->getNumberLastFour();
-        $expiryMonth = $fakeCard->getExpiryMonth();
-        $expiryYear = $fakeCard->getExpiryYear();
+        $expiryMonth = (string) $fakeCard->getExpiryMonth();
+        $expiryYear = (string) $fakeCard->getExpiryYear();
         $firstName = $fakeCard->getFirstName();
         $lastName = $fakeCard->getLastName();
         $email = $fakeCard->getEmail();
@@ -152,8 +152,8 @@ class ExtendedFetchTransactionRequestTest extends TestCase
         }
         $this->assertSame($cardLastFour, $card->getNumberLastFour());
         $this->assertSame($cardBrand, $card->getBrand());
-        $this->assertSame($expiryMonth, $card->getExpiryMonth());
-        $this->assertSame($expiryYear, $card->getExpiryYear());
+        $this->assertSame($expiryMonth, (string) $card->getExpiryMonth());
+        $this->assertSame($expiryYear, (string) $card->getExpiryYear());
         $this->assertSame($firstName, $card->getFirstName());
         $this->assertSame($lastName, $card->getLastName());
         $this->assertSame($email, $card->getEmail());

@@ -161,7 +161,7 @@ class FetchTransactionsRequestTest extends TestCase
         $this->assertFalse($response->isRedirect());
         $this->assertSame('200', $response->getCode());
         $transactions = $response->getTransactions();
-        $this->assertSame(2, count($transactions));
+        $this->assertCount(2, $transactions);
         if ($transactions) {
             foreach ($transactions as $i => $transaction) {
                 $fakeTransaction = $fakeTransactions[intval($i) + 1];

@@ -106,8 +106,9 @@ class Response extends AbstractResponse
             if ($this->data instanceof SimpleXMLElement && isset($this->data->message->description)) {
                 return (string) $this->data->message->description;
             }
-            // some error responses are plain text instead of XML
-            return (string) $this->data;
+            if (is_string($this->data)) {
+                return $this->data;
+            }  // some error responses are plain text instead of XML
         }
 
         return null;
@@ -391,7 +392,7 @@ class Response extends AbstractResponse
      */
     public function getTransactions()
     {
-        if (!isset($this->data['data'])) {
+        if (!is_array($this->data) || !isset($this->data['data'])) {
             return null;
         }
         $transactions = array();

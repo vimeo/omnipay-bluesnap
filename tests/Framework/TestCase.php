@@ -85,7 +85,7 @@ class TestCase extends \Omnipay\Tests\TestCase
      * then the function will replace all instances of '[NAME]' in the
      * response with 'Fake Name'. Substitutions are not required.
      *
-     * @param array<string>|string $paths
+     * @param array<string, string>|string $paths
      * @param array<string, string> $substitutions
      *
      * @return MockPlugin
@@ -95,8 +95,12 @@ class TestCase extends \Omnipay\Tests\TestCase
         $this->substitutableMockHttpRequests = array();
         $that = $this;
         $mock = new MockPlugin(null, true);
-        $this->getHttpClient()->getEventDispatcher()->removeSubscriber($mock);
-        $mock->getEventDispatcher()->addListener(
+        /** @var \Symfony\Component\EventDispatcher\EventDispatcher */
+        $event_dispatcher = $this->getHttpClient()->getEventDispatcher();
+        $event_dispatcher->removeSubscriber($mock);
+        /** @var \Symfony\Component\EventDispatcher\EventDispatcher */
+        $mock_event_dispatcher = $mock->getEventDispatcher();
+        $mock_event_dispatcher->addListener(
             'mock.request',
             // @codingStandardsIgnoreStart
             /**
@@ -120,7 +124,7 @@ class TestCase extends \Omnipay\Tests\TestCase
             $mock->addResponse($this->getMockHttpResponse($path, $substitutions) ?: '');
         }
 
-        $this->getHttpClient()->getEventDispatcher()->addSubscriber($mock);
+        $event_dispatcher->addSubscriber($mock);
 
         return $mock;
     }

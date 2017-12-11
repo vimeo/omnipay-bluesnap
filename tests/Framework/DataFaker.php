@@ -282,7 +282,7 @@ class DataFaker
     public function customerReference()
     {
         do {
-            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 10));
+            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 9));
         } while ($result == 0);
         return $result;
     }
@@ -295,7 +295,7 @@ class DataFaker
     public function transactionReference()
     {
         do {
-            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 10));
+            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 9));
         } while ($result == 0);
         return $result;
     }
@@ -308,7 +308,7 @@ class DataFaker
     public function subscriptionReference()
     {
         do {
-            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 10));
+            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 9));
         } while ($result == 0);
         return $result;
     }
@@ -321,7 +321,7 @@ class DataFaker
     public function subscriptionChargeReference()
     {
         do {
-            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(3, 10));
+            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(3, 9));
         } while ($result == 0);
         return $result;
     }
@@ -347,7 +347,7 @@ class DataFaker
     public function planReference()
     {
         do {
-            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 10));
+            $result = $this->randomCharacters(self::DIGITS, $this->intBetween(6, 9));
         } while ($result == 0);
         return $result;
     }
