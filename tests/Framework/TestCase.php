@@ -49,7 +49,6 @@ class TestCase extends \Omnipay\Tests\TestCase
      *
      * @param string $path
      * @param array<string, string> $substitutions
-     * @psalm-suppress ImplementedReturnTypeMismatch
      * @return Response|false
      */
     public function getMockHttpResponse($path, $substitutions = array())
@@ -89,8 +88,7 @@ class TestCase extends \Omnipay\Tests\TestCase
      * @param array<string, string>|string $paths
      * @param array<string, string> $substitutions
      *
-     * @psalm-suppress MixedInferredReturnType
-     * @psalm-suppress MixedMethodCall
+     * @psalm-suppress MixedMethodCall // could not verify the return type of $mock
      * @return MockPlugin
      */
     public function setMockHttpResponse($paths, $substitutions = array())

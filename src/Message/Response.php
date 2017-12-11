@@ -389,7 +389,7 @@ class Response extends AbstractResponse
 
     /**
      * @return array<Transaction>|null
-     * @psalm-suppress PossiblyInvalidArrayOffset
+     * @psalm-suppress PossiblyInvalidArrayOffset // Could not verify that data['data'] was set
      */
     public function getTransactions()
     {
