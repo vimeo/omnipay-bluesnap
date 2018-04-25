@@ -93,7 +93,7 @@ BlueSnap accounts have a separate username and password for test mode. There is 
 
 ## Support
 
-This driver is very new and at this point may not be completely reliable. If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/Vimeo/omnipay-bluesnap/issues), or better yet, fork the library and submit a pull request.
+If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/Vimeo/omnipay-bluesnap/issues), or better yet, fork the library and submit a pull request.
 
 If you are having general issues with Omnipay, we suggest posting on [Stack Overflow](http://stackoverflow.com/). Be sure to add the
 [omnipay tag](http://stackoverflow.com/questions/tagged/omnipay) so it can be easily found.
