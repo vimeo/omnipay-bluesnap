@@ -10,3 +10,4 @@ composer.lock
 composer-psalm.lock
 composer.phar
 /vendor
+.idea
