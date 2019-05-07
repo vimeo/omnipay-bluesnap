@@ -317,8 +317,10 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             }
         }
 
+        $eventDispatcher = $this->httpClient->getEventDispatcher();
+
         // don't throw exceptions for errors
-        $this->httpClient->getEventDispatcher()->addListener(
+        $eventDispatcher->addListener(
             // @codingStandardsIgnoreStart
             'request.error',
             /**
@@ -340,16 +342,13 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $data
         );
 
-        /**
-         * @var \Guzzle\Http\Message\RequestInterface
-         */
         $httpRequest = $httpRequest
-                      ->setHeader(
-                          'Authorization',
-                          'Basic ' . base64_encode(($this->getUsername() ?: '') . ':' . ($this->getPassword() ?: ''))
-                      )
-                      ->setHeader('Content-Type', 'application/xml')
-                      ->setHeader('bluesnap-version', self::API_VERSION);
+            ->setHeader(
+                'Authorization',
+                'Basic ' . base64_encode(($this->getUsername() ?: '') . ':' . ($this->getPassword() ?: ''))
+            )
+            ->setHeader('Content-Type', 'application/xml')
+            ->setHeader('bluesnap-version', self::API_VERSION);
         $httpResponse = $httpRequest->send();
 
         // responses can be XML, JSON, or plain text depending on the request and whether it's successful
