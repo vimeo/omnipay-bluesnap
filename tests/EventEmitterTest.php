@@ -3,33 +3,22 @@
 namespace Omnipay\BlueSnap;
 
 use Exception;
+use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest;
+use Omnipay\BlueSnap\Test\Framework\TestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
-use Omnipay\Tests\TestCase;
 use Omnipay\BlueSnap\Test\Framework\TestSubscriber;
+use Omnipay\Common\Message\ResponseInterface;
 use PaymentGatewayLogger\Event\Constants;
 use PaymentGatewayLogger\Event\ErrorEvent;
 use PaymentGatewayLogger\Event\RequestEvent;
 use PaymentGatewayLogger\Event\ResponseEvent;
 use PaymentGatewayLogger\Test\Framework\TestLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class EventEmitterTest extends TestCase
 {
-    protected $customHttpClient;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    /**
-     * @var TestSubscriber
-     */
-    protected $testSubscriber;
-
     /**
      * @var string
      */
@@ -40,6 +29,9 @@ class EventEmitterTest extends TestCase
      */
     private $faker;
 
+    /**
+     * @return void
+     */
     protected function setUp()
     {
         $this->faker = new DataFaker();
@@ -51,6 +43,7 @@ class EventEmitterTest extends TestCase
     /**
      * Ensures that 'Request' and 'Response' events are emitted when issuing a request.
      *
+     * @psalm-suppress UndefinedMethod
      * @return void
      */
     public function testAuthorizeRequestSuccessfulResponseEmitted()
@@ -60,6 +53,8 @@ class EventEmitterTest extends TestCase
         ));
 
         $testSubscriber = new TestSubscriber($this->faker->name(), new TestLogger());
+
+        /** @var Client $customHttpClient */
         $customHttpClient = $this->getHttpClient();
         $eventDispatcher = $customHttpClient->getEventDispatcher();
 
@@ -74,8 +69,9 @@ class EventEmitterTest extends TestCase
                 Constants::OMNIPAY_REQUEST_BEFORE_SEND,
                 /** @return void */
                 function (RequestEvent $event) use ($class) {
+                    /** @var \Omnipay\Common\Message\RequestInterface $request */
                     $request = $event['request'];
-                     $class->assertInstanceOf('Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest', $request);
+                    $class->assertInstanceOf('Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest', $request);
                 }
             );
 
@@ -84,6 +80,7 @@ class EventEmitterTest extends TestCase
                 Constants::OMNIPAY_RESPONSE_SUCCESS,
                 /** @return void */
                 function (ResponseEvent $event) use ($class) {
+                    /** @var ResponseInterface $response */
                     $response = $event['response'];
                     $class->assertInstanceOf('\Omnipay\BlueSnap\Message\Response', $response);
                 }
@@ -102,6 +99,7 @@ class EventEmitterTest extends TestCase
     /**
      * Ensures that 'Request' and 'Error' events are emitted when issuing an improper request.
      *
+     * @psalm-suppress UndefinedMethod
      * @return void
      */
     public function testAuthorizeRequestErrorEventEmitted()
@@ -111,6 +109,8 @@ class EventEmitterTest extends TestCase
         ));
 
         $testSubscriber = new TestSubscriber($this->faker->name(), new TestLogger());
+
+        /** @var Client $customHttpClient */
         $customHttpClient = $this->getMock(
             'Guzzle\Http\Client',
             array('getEventDispatcher', 'addSubscriber', 'createRequest')
@@ -126,6 +126,7 @@ class EventEmitterTest extends TestCase
         $guzzle_request_mock->method('setHeader')->willReturnSelf();
         $customHttpClient->method('createRequest')->willReturn($guzzle_request_mock);
 
+        /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = $customHttpClient->getEventDispatcher();
         $eventDispatcher->addSubscriber($testSubscriber);
 
@@ -138,6 +139,7 @@ class EventEmitterTest extends TestCase
                 Constants::OMNIPAY_REQUEST_BEFORE_SEND,
                 /** @return void */
                 function (RequestEvent $event) use ($class) {
+                    /** @var \Omnipay\Common\Message\RequestInterface $request */
                     $request = $event['request'];
                     $class->assertInstanceOf('Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest', $request);
                 }
@@ -148,6 +150,7 @@ class EventEmitterTest extends TestCase
                 Constants::OMNIPAY_REQUEST_ERROR,
                 /** @return void */
                 function (ErrorEvent $event) use ($class) {
+                    /** @var \Error $error */
                     $error = $event['error'];
                     $class->assertInstanceOf('Guzzle\Common\Exception\RuntimeException', $error);
                 }
