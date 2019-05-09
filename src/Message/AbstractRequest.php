@@ -4,6 +4,7 @@ namespace Omnipay\BlueSnap\Message;
 
 use DateTime;
 use Exception;
+use Guzzle\Http\Message\RequestInterface;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Exception\RuntimeException;
@@ -342,6 +343,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             }
         );
 
+        /** @var RequestInterface $httpRequest */
         $httpRequest = $this->httpClient->createRequest(
             $this->getHttpMethod(),
             $this->getEndpoint(),
@@ -349,13 +351,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $data
         );
 
-        $httpRequest = $httpRequest
+        $httpRequest
             ->setHeader(
                 'Authorization',
                 'Basic ' . base64_encode(($this->getUsername() ?: '') . ':' . ($this->getPassword() ?: ''))
             )
             ->setHeader('Content-Type', 'application/xml')
             ->setHeader('bluesnap-version', self::API_VERSION);
+
         $httpResponse = null;
         try {
             // Fire a request event before sending request.
