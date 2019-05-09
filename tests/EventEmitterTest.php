@@ -7,7 +7,6 @@ use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest;
 use Omnipay\BlueSnap\Test\Framework\TestCase;
-use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use Omnipay\BlueSnap\Test\Framework\TestSubscriber;
 use Omnipay\Common\Message\ResponseInterface;
 use PaymentGatewayLogger\Event\Constants;
@@ -25,17 +24,17 @@ class EventEmitterTest extends TestCase
     private $subscriptionReference;
 
     /**
-     * @var DataFaker
+     * @var TestSubscriber
      */
-    private $faker;
+    private $testSubscriber;
 
     /**
      * @return void
      */
     protected function setUp()
     {
-        $this->faker = new DataFaker();
-        $this->subscriptionReference = $this->faker->subscriptionReference();
+        $this->testSubscriber = new TestSubscriber('test_gateway', new TestLogger());
+        $this->subscriptionReference = '123';
 
         parent::setUp();
     }
@@ -52,13 +51,11 @@ class EventEmitterTest extends TestCase
             'SUBSCRIPTION_REFERENCE' => $this->subscriptionReference
         ));
 
-        $testSubscriber = new TestSubscriber($this->faker->name(), new TestLogger());
-
         /** @var Client $customHttpClient */
         $customHttpClient = $this->getHttpClient();
         $eventDispatcher = $customHttpClient->getEventDispatcher();
 
-        $eventDispatcher->addSubscriber($testSubscriber);
+        $eventDispatcher->addSubscriber($this->testSubscriber);
 
         $request = new ExtendedCancelSubscriptionRequest($customHttpClient, $this->getHttpRequest());
         $request->setSubscriptionReference($this->subscriptionReference);
@@ -89,7 +86,7 @@ class EventEmitterTest extends TestCase
         $response = $request->send();
         $this->assertTrue($response->isSuccessful());
 
-        $eventsDispatched = $testSubscriber->eventsDispatched;
+        $eventsDispatched = $this->testSubscriber->eventsDispatched;
 
         $this->assertEquals(1, $eventsDispatched[Constants::OMNIPAY_REQUEST_BEFORE_SEND]);
         $this->assertEquals(1, $eventsDispatched[Constants::OMNIPAY_RESPONSE_SUCCESS]);
@@ -108,8 +105,6 @@ class EventEmitterTest extends TestCase
             'SUBSCRIPTION_REFERENCE' => $this->subscriptionReference
         ));
 
-        $testSubscriber = new TestSubscriber($this->faker->name(), new TestLogger());
-
         /** @var Client $customHttpClient */
         $customHttpClient = $this->getMock(
             'Guzzle\Http\Client',
@@ -121,14 +116,14 @@ class EventEmitterTest extends TestCase
         $guzzle_request_mock = $this->getMock(
             'Guzzle\Http\Message\EntityEnclosingRequest',
             array('setHeader'),
-            array(RequestInterface::POST, $this->faker->url())
+            array(RequestInterface::POST, 'https://www.test.com')
         );
         $guzzle_request_mock->method('setHeader')->willReturnSelf();
         $customHttpClient->method('createRequest')->willReturn($guzzle_request_mock);
 
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = $customHttpClient->getEventDispatcher();
-        $eventDispatcher->addSubscriber($testSubscriber);
+        $eventDispatcher->addSubscriber($this->testSubscriber);
 
         $request = new ExtendedCancelSubscriptionRequest($customHttpClient, $this->getHttpRequest());
         $request->setSubscriptionReference($this->subscriptionReference);
@@ -163,7 +158,7 @@ class EventEmitterTest extends TestCase
             $this->fail();
         } catch (Exception $exception) {
             // We want to resume program execution to check events in $eventsDispatched.
-            $eventsDispatched = $testSubscriber->eventsDispatched;
+            $eventsDispatched = $this->testSubscriber->eventsDispatched;
             $this->assertEquals('A client must be set on the request', $exception->getMessage());
         }
 
