@@ -2,11 +2,11 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use ReflectionClass;
 
-class IPNCallbackTest extends TestCase
+class IPNCallbackTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker

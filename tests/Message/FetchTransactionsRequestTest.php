@@ -2,13 +2,13 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
 use DateTimeZone;
 use Mockery;
 
-class FetchTransactionsRequestTest extends TestCase
+class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker

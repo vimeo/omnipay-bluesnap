@@ -11,7 +11,7 @@ class MockPlugin extends \Guzzle\Plugin\Mock\MockPlugin
      * Get a mock response from a file
      *
      * This extension adds supports for substitutions in the file, as described
-     * in \Omnipay\BlueSnap\TestCase::setMockHttpResponse
+     * in \Omnipay\BlueSnap\OmnipayBlueSnapTestCase::setMockHttpResponse
      *
      * @param string $path File to retrieve a mock response from
      * @param array<string, string> $substitutions default array()

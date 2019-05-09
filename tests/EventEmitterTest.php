@@ -6,7 +6,7 @@ use Exception;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use Omnipay\BlueSnap\Message\ExtendedCancelSubscriptionRequest;
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\TestSubscriber;
 use Omnipay\Common\Message\ResponseInterface;
 use PaymentGatewayLogger\Event\Constants;
@@ -16,7 +16,7 @@ use PaymentGatewayLogger\Event\ResponseEvent;
 use PaymentGatewayLogger\Test\Framework\TestLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class EventEmitterTest extends TestCase
+class EventEmitterTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var string
