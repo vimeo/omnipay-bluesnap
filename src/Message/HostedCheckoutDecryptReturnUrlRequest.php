@@ -55,6 +55,7 @@ class HostedCheckoutDecryptReturnUrlRequest extends ExtendedAbstractRequest
 {
     /**
      * @return SimpleXMLElement
+     * @psalm-suppress PossiblyInvalidArrayAccess
      */
     public function getData()
     {
