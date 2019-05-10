@@ -99,7 +99,7 @@ class Response extends AbstractResponse
      * Get the error message from the response. Returns null if request was successful.
      *
      * @return string|null
-     * @psalm-suppress MixedPropertyFetch
+     * @psalm-suppress MixedPropertyFetch because we check the data typing before using.
      */
     public function getMessage()
     {

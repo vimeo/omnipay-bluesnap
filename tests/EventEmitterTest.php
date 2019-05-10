@@ -42,7 +42,6 @@ class EventEmitterTest extends OmnipayBlueSnapTestCase
     /**
      * Ensures that 'Request' and 'Response' events are emitted when issuing a request.
      *
-     * @psalm-suppress UndefinedMethod
      * @return void
      */
     public function testAuthorizeRequestSuccessfulResponseEmitted()
@@ -96,7 +95,7 @@ class EventEmitterTest extends OmnipayBlueSnapTestCase
     /**
      * Ensures that 'Request' and 'Error' events are emitted when issuing an improper request.
      *
-     * @psalm-suppress UndefinedMethod
+     * @psalm-suppress UndefinedMethod because Psalm can't infer that it exists in the Mock object but it does!
      * @return void
      */
     public function testAuthorizeRequestErrorEventEmitted()

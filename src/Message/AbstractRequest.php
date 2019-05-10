@@ -359,13 +359,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             ->setHeader('Content-Type', 'application/xml')
             ->setHeader('bluesnap-version', self::API_VERSION);
 
+        // Fire a request event before sending request.
+        $eventDispatcher->dispatch(
+            PaymentGatewayLoggerConstants::OMNIPAY_REQUEST_BEFORE_SEND,
+            new RequestEvent($this)
+        );
+
         $httpResponse = null;
         try {
-            // Fire a request event before sending request.
-            $eventDispatcher->dispatch(
-                PaymentGatewayLoggerConstants::OMNIPAY_REQUEST_BEFORE_SEND,
-                new RequestEvent($this)
-            );
 
             $httpResponse = $httpRequest->send();
         } catch (Exception $e) {
