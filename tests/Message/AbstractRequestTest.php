@@ -3,11 +3,11 @@
 namespace Omnipay\BlueSnap\Message;
 
 use Mockery;
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTimeZone;
 
-class AbstractRequestTest extends TestCase
+class AbstractRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker

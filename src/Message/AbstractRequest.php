@@ -2,11 +2,17 @@
 
 namespace Omnipay\BlueSnap\Message;
 
+use DateTime;
+use Exception;
+use Guzzle\Http\Message\RequestInterface;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\Common\Exception\InvalidRequestException;
-use SimpleXMLElement;
 use Omnipay\Common\Exception\RuntimeException;
-use DateTime;
+use PaymentGatewayLogger\Event\Constants as PaymentGatewayLoggerConstants;
+use PaymentGatewayLogger\Event\ErrorEvent;
+use PaymentGatewayLogger\Event\RequestEvent;
+use PaymentGatewayLogger\Event\ResponseEvent;
+use SimpleXMLElement;
 
 /**
  * BlueSnap Abstract Request
@@ -300,7 +306,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @param SimpleXMLElement|null $data
      * @return Response
+     *
      * @throws RuntimeException if $data is invalid XML
+     * @throws Exception if there is a problem when initiating the request.
      * @psalm-suppress TypeDoesNotContainType psalm bug with SimpleXMLElement: https://github.com/vimeo/psalm/issues/145
      */
     public function sendData($data)
@@ -317,8 +325,10 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             }
         }
 
+        $eventDispatcher = $this->httpClient->getEventDispatcher();
+
         // don't throw exceptions for errors
-        $this->httpClient->getEventDispatcher()->addListener(
+        $eventDispatcher->addListener(
             // @codingStandardsIgnoreStart
             'request.error',
             /**
@@ -333,6 +343,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             }
         );
 
+        /** @var RequestInterface $httpRequest */
         $httpRequest = $this->httpClient->createRequest(
             $this->getHttpMethod(),
             $this->getEndpoint(),
@@ -340,17 +351,33 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $data
         );
 
-        /**
-         * @var \Guzzle\Http\Message\RequestInterface
-         */
-        $httpRequest = $httpRequest
-                      ->setHeader(
-                          'Authorization',
-                          'Basic ' . base64_encode(($this->getUsername() ?: '') . ':' . ($this->getPassword() ?: ''))
-                      )
-                      ->setHeader('Content-Type', 'application/xml')
-                      ->setHeader('bluesnap-version', self::API_VERSION);
-        $httpResponse = $httpRequest->send();
+        $httpRequest
+            ->setHeader(
+                'Authorization',
+                'Basic ' . base64_encode(($this->getUsername() ?: '') . ':' . ($this->getPassword() ?: ''))
+            )
+            ->setHeader('Content-Type', 'application/xml')
+            ->setHeader('bluesnap-version', self::API_VERSION);
+
+        // Fire a request event before sending request.
+        $eventDispatcher->dispatch(
+            PaymentGatewayLoggerConstants::OMNIPAY_REQUEST_BEFORE_SEND,
+            new RequestEvent($this)
+        );
+
+        $httpResponse = null;
+        try {
+
+            $httpResponse = $httpRequest->send();
+        } catch (Exception $e) {
+            // Fire an error event if there was a problem with the request.
+            $eventDispatcher->dispatch(
+                PaymentGatewayLoggerConstants::OMNIPAY_REQUEST_ERROR,
+                new ErrorEvent($e, $this)
+            );
+
+            throw $e;
+        }
 
         // responses can be XML, JSON, or plain text depending on the request and whether it's successful
         try {
@@ -374,6 +401,12 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $request_id_header = $httpResponse->getHeader('Request-Id');
             $this->response->setRequestId($request_id_header ? strval($request_id_header) : null);
         }
+
+        // Log the successful request's response.
+        $eventDispatcher->dispatch(
+            PaymentGatewayLoggerConstants::OMNIPAY_RESPONSE_SUCCESS,
+            new ResponseEvent($this->response)
+        );
 
         return $this->response;
     }

@@ -7,10 +7,10 @@ use Guzzle\Http\Message\RequestInterface as GuzzleRequestInterface;
 use Guzzle\Common\Event;
 use Guzzle\Http\Message\Response;
 
-class TestCase extends \Omnipay\Tests\TestCase
+class OmnipayBlueSnapTestCase extends \Omnipay\Tests\TestCase
 {
     /**
-     * This has to be added since the Omnipay TestCase declares private variables
+     * This has to be added since the Omnipay OmnipayBlueSnapTestCase declares private variables
      * instead of protected variables.
      *
      * @var array

@@ -3,11 +3,11 @@
 namespace Omnipay\BlueSnap\Message;
 
 use Mockery;
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use SimpleXMLElement;
 
-class ExtendedAbstractRequestTest extends TestCase
+class ExtendedAbstractRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker

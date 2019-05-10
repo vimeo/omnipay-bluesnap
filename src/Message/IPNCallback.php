@@ -76,6 +76,7 @@ class IPNCallback
      * $ipn can be a full URL, just the query string, or the value of the $_POST variable.
      *
      * @param string|array<string, string> $ipn
+     * @psalm-suppress PossiblyInvalidArrayAccess because the existence of the key is checked first before using it.
      */
     public function __construct($ipn)
     {

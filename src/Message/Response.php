@@ -99,6 +99,7 @@ class Response extends AbstractResponse
      * Get the error message from the response. Returns null if request was successful.
      *
      * @return string|null
+     * @psalm-suppress MixedPropertyFetch because we check the data typing before using.
      */
     public function getMessage()
     {
@@ -428,7 +429,7 @@ class Response extends AbstractResponse
     public function getSubscriptions()
     {
         // data can be SimpleXMLElement or JSON object
-        if (!isset($this->data['data']) && !isset($this->data)) {
+        if (!isset($this->data) && !isset($this->data['data'])) {
             return null;
         }
 

@@ -11,7 +11,7 @@ class MockPlugin extends \Guzzle\Plugin\Mock\MockPlugin
      * Get a mock response from a file
      *
      * This extension adds supports for substitutions in the file, as described
-     * in \Omnipay\BlueSnap\TestCase::setMockHttpResponse
+     * in \Omnipay\BlueSnap\OmnipayBlueSnapTestCase::setMockHttpResponse
      *
      * @param string $path File to retrieve a mock response from
      * @param array<string, string> $substitutions default array()
@@ -39,9 +39,13 @@ class MockPlugin extends \Guzzle\Plugin\Mock\MockPlugin
      * Add a response to the end of the queue
      *
      * @param Response|string $response Response object or path to response file
+     *
      * @return MockPlugin
-     * @throws InvalidArgumentException if a string or Response is not passed
+     * @throws InvalidArgumentException if a string or Response is not passed or if a Response object cannot be created
+     *                                  from the provided response file path.
+     *
      * @psalm-suppress FailedTypeResolution because we want run time checks
+     * @psalm-suppress RedundantConditionGivenDocblockType because we want run time checks on $response
      */
     public function addResponse($response)
     {
@@ -50,6 +54,10 @@ class MockPlugin extends \Guzzle\Plugin\Mock\MockPlugin
                 throw new InvalidArgumentException('Invalid response');
             }
             $response = self::getMockFile($response);
+
+            if ($response === false) {
+                throw new InvalidArgumentException('Unable to create a response object from the file path');
+            }
         }
 
         $this->queue[] = $response;

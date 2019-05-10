@@ -2,10 +2,10 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 
-class HostedCheckoutDecryptReturnUrlRequestTest extends TestCase
+class HostedCheckoutDecryptReturnUrlRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker

@@ -4,10 +4,10 @@ namespace Omnipay\BlueSnap\Message;
 
 use Omnipay\BlueSnap\UrlParameterBag;
 use Omnipay\BlueSnap\UrlParameter;
-use Omnipay\BlueSnap\Test\Framework\TestCase;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 
-class HostedCheckoutPurchaseRequestTest extends TestCase
+class HostedCheckoutPurchaseRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker
