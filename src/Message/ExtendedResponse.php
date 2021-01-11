@@ -4,7 +4,6 @@
 namespace Omnipay\BlueSnap\Message;
 
 
-use Closure;
 use DateTime;
 use DateTimeZone;
 use Omnipay\BlueSnap\Constants;
@@ -347,22 +346,6 @@ class ExtendedResponse extends AbstractResponse
                 $this->data->{'next-charge-date'},
                 new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)
             );
-        }
-        return null;
-    }
-
-    /**
-     * Get the decrypted parameters from the return url after a HostedCheckoutDecryptReturnUrlRequest
-     * Returns an array of paramName => paramValue
-     *
-     * @return array|null
-     * @psalm-suppress MixedPropertyFetch
-     */
-    public function getDecryptedParameters()
-    {
-        if ($this->data instanceof SimpleXMLElement && isset($this->data->{'decrypted-token'})) {
-            parse_str((string) $this->data->{'decrypted-token'}, $result);
-            return $result ?: null;
         }
         return null;
     }

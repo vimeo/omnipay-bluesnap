@@ -2,9 +2,8 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\Common\Exception\InvalidRequestException;
-use SimpleXMLElement;
 use Omnipay\BlueSnap\Constants;
+use SimpleXMLElement;
 
 /**
  * Decrypts an encrypted return URL.
@@ -51,7 +50,7 @@ use Omnipay\BlueSnap\Constants;
  *   }
  * </code>
  */
-class HostedCheckoutDecryptReturnUrlRequest extends ExtendedAbstractRequest
+class HostedCheckoutDecryptReturnUrlRequest extends AbstractRequest
 {
     /**
      * @return SimpleXMLElement
