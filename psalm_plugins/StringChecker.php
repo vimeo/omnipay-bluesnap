@@ -16,7 +16,7 @@ class StringChecker extends \Psalm\Plugin
      * Checks an expression
      *
      * @param  StatementsChecker    $statements_checker
-     * @param  PhpParser\Node\Expr   $stmt
+     * @param  \PhpParser\Node\Expr  $stmt
      * @param  Context               $context
      * @param  CodeLocation          $code_location
      * @param  array<string>         $suppressed_issues
@@ -24,7 +24,7 @@ class StringChecker extends \Psalm\Plugin
      */
     public function checkExpression(
         StatementsChecker $statements_checker,
-        PhpParser\Node\Expr $stmt,
+        \PhpParser\Node\Expr $stmt,
         Context $context,
         CodeLocation $code_location,
         array $suppressed_issues
@@ -37,7 +37,7 @@ class StringChecker extends \Psalm\Plugin
 
                 $project_checker = $statements_checker->getFileChecker()->project_checker;
                 if (Checker\ClassChecker::checkFullyQualifiedClassLikeName(
-                    $statements_checker,
+                    $project_checker,
                     $fq_class_name,
                     $code_location,
                     $suppressed_issues
