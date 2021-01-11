@@ -2,13 +2,13 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\Common\Message\RedirectResponseInterface;
 use Omnipay\BlueSnap\Constants;
+use Omnipay\Common\Message\RedirectResponseInterface;
 
 /**
  * Response object for the HostedCheckoutPurchaseRequest. See that file for details.
  */
-class HostedCheckoutPurchaseResponse extends Response implements RedirectResponseInterface
+class HostedCheckoutPurchaseResponse extends AbstractResponse implements RedirectResponseInterface
 {
     /**
      * Returns true if the response is a redirect, false otherwise.
