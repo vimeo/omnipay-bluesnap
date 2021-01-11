@@ -12,6 +12,12 @@ use Omnipay\BlueSnap\UrlParameterBag;
 abstract class ExtendedAbstractRequest extends AbstractRequest
 {
     /**
+     * @var string
+     */
+    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\ExtendedResponse';
+
+
+    /**
      * Gets the gateway's identifier for the store (BlueSnap calls this the store ID)
      *
      * @return string|null
@@ -84,12 +90,12 @@ abstract class ExtendedAbstractRequest extends AbstractRequest
     /**
      * Overriding to provide a more precise return type
      *
-     * @return Response
+     * @return ExtendedResponse
      */
     public function send()
     {
         /**
-         * @var Response
+         * @var ExtendedResponse
          */
         return parent::send();
     }
