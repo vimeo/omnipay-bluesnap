@@ -7,7 +7,7 @@ use Omnipay\BlueSnap\Transaction;
 use Omnipay\Common\Message\RequestInterface;
 use SimpleXMLElement;
 
-class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
+abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
 {
     /**
      * HTTP request id
