@@ -46,7 +46,15 @@ use Omnipay\Common\Exception\InvalidRequestException;
  *   }
  * </code>
  */
-class FetchTransactionsRequest extends ReportingAbstractRequest
+class ReportingFetchTransactionsRequest extends ReportingAbstractRequest
 {
     const REPORT_NAME = 'TransactionDetail';
+
+    /**
+     * @return string
+     */
+    public function getReportName()
+    {
+        return self::REPORT_NAME;
+    }
 }

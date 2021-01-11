@@ -17,6 +17,11 @@ use Omnipay\Common\Exception\InvalidRequestException;
 abstract class ReportingAbstractRequest extends AbstractRequest
 {
     /**
+     * @return string
+     */
+    abstract public function getReportName();
+
+    /**
      * Returns the HTTP method to be used for this request
      *
      * @return string
@@ -51,7 +56,7 @@ abstract class ReportingAbstractRequest extends AbstractRequest
     {
         $startTime = $this->getStartTime();
         $endTime = $this->getEndTime();
-        $endpoint = parent::getEndpoint() . '/report/' . static::REPORT_NAME;
+        $endpoint = parent::getEndpoint() . '/report/' . $this->getReportName();
 
         // this should always be true
         if ($startTime && $endTime) {

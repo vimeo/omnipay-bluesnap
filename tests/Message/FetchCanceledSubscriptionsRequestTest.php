@@ -15,7 +15,7 @@ class FetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
     protected $faker;
 
     /**
-     * @var FetchCanceledSubscriptionsRequest
+     * @var ReportingFetchCanceledSubscriptionsRequest
      */
     protected $request;
 
@@ -45,7 +45,7 @@ class FetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             $this->startTime = $temp;
         }
 
-        $this->request = new FetchCanceledSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->request = new ReportingFetchCanceledSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
     }
 
     /**

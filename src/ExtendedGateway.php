@@ -72,18 +72,19 @@ class ExtendedGateway extends Gateway
      * Fetch BlueSnap subscription objects by customer or in a time range.
      *
      * See Message\ExtendedFetchSubscriptionsRequest for more details on fetching
-     * by customer. See Message\FetchSubscriptionsRequest for more details on
+     * by customer. See Message\ReportingFetchSubscriptionsRequest for more details on
      * fetching by time range. The correct request will be made depending on the
      * parameters passed.
      *
      * @param array $parameters
-     * @return \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
+     *
+     * @return \Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest
      */
     public function fetchSubscriptions(array $parameters = array())
     {
         if (isset($parameters['customerReference'])) {
             /**
-             * @var \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
+             * @var \Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest
              */
             return $this->createRequest(
                 '\Omnipay\BlueSnap\Message\ExtendedFetchSubscriptionsRequest',

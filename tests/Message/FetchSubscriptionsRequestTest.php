@@ -16,7 +16,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
     protected $faker;
 
     /**
-     * @var FetchSubscriptionsRequest
+     * @var ReportingFetchSubscriptionsRequest
      */
     protected $request;
 
@@ -46,7 +46,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             $this->startTime = $temp;
         }
 
-        $this->request = new FetchSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->request = new ReportingFetchSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
     }
 
     /**

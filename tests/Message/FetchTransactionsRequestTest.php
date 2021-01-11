@@ -16,7 +16,7 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
     protected $faker;
 
     /**
-     * @var FetchTransactionsRequest
+     * @var ReportingFetchTransactionsRequest
      */
     protected $request;
 
@@ -46,7 +46,7 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
             $this->startTime = $temp;
         }
 
-        $this->request = new FetchTransactionsRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->request = new ReportingFetchTransactionsRequest($this->getHttpClient(), $this->getHttpRequest());
     }
 
     /**
