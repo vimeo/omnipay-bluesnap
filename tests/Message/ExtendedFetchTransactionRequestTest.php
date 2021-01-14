@@ -215,4 +215,35 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
             $response->getMessage()
         );
     }
+
+    /**
+     * @psalm-suppress PossiblyNullReference
+     * @return void
+     */
+    public function testGetTransaction()
+    {
+        $currency = $this->faker->currency();
+        $amount = $this->faker->monetaryAmount($currency);
+        $customer_reference = $this->faker->customerReference();
+        $date_created = $this->faker->timestamp();
+        $status = $this->faker->transactionStatus();
+
+        $this->setMockHttpResponse('ExtendedFetchTransactionSuccess.txt', array(
+            'AMOUNT' => $amount,
+            'DATE_CREATED' => $date_created,
+            'CURRENCY' => $currency,
+            'CUSTOMER_REFERENCE' => $customer_reference,
+            'TRANSACTION_REFERENCE' => $this->transactionReference,
+            'STATUS' => $status,
+        ));
+
+        $response = $this->request->send();
+        $transaction = $response->getTransaction();
+        $this->assertSame($amount, $transaction->getAmount());
+        $this->assertSame($currency, $transaction->getCurrency());
+        $this->assertSame($status, $transaction->getStatus());
+        $this->assertSame($customer_reference, $transaction->getCustomerReference());
+        $this->assertSame($date_created, $transaction->getDate()->format('d-M-y'));
+        $this->assertSame($this->transactionReference, $transaction->getTransactionReference());
+    }
 }
