@@ -2,11 +2,14 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
-use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
 use DateTimeZone;
-use Mockery;
+use Exception;
+use Omnipay\BlueSnap\Constants;
+use Omnipay\BlueSnap\Gateway;
+use Omnipay\BlueSnap\Types;
+use Omnipay\BlueSnap\Test\Framework\DataFaker;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 
 class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 {
@@ -50,21 +53,49 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
     }
 
     /**
+     * @param array $params
+     * @param string $expected
+     * @dataProvider provideTestEndPointParameters
      * @return void
      */
-    public function testEndpoint()
+    public function testEndpoint($params, $expected)
     {
-        $this->request->setStartTime($this->startTime);
-        $this->request->setEndTime($this->endTime);
+        $gateway = new Gateway();
+        $gateway->setTestMode(true);
+        $request = $gateway->fetchTransactions($params);
 
         // @codingStandardsIgnoreStart
-        $this->assertSame(
-            'https://sandbox.bluesnap.com/services/2/report/TransactionDetail?period=CUSTOM'
-                . '&from_date=' . urlencode((string) $this->startTime->format('m/d/Y'))
-                . '&to_date=' . urlencode((string) $this->endTime->format('m/d/Y')),
-            $this->request->getEndpoint()
-        );
+        $this->assertSame($expected,$request->getEndpoint());
         // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * @return array[]
+     * @throws Exception
+     */
+    public function provideTestEndPointParameters()
+    {
+        $startTime = '01/01/2020';
+        $endTime = '01/01/2021';
+
+        $expected_end_point = AbstractRequest::TEST_ENDPOINT . '/services/2/report/TransactionDetail?period=CUSTOM'
+            . '&from_date=' . urlencode($startTime)
+            . '&to_date=' . urlencode($endTime);
+        $default_params = array(
+            'startTime' => new DateTime($startTime, new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+            'endTime' => new DateTime($endTime, new DateTimeZone(Constants::BLUESNAP_TIME_ZONE))
+        );
+
+        $params_with_chargeback = array_merge(array('transactionType' => Types::TRANSACTION_CHARGEBACK), $default_params);
+        $params_with_refund = array_merge(array('transactionType' => Types::TRANSACTION_REFUND), $default_params);
+        $params_with_sale = array_merge(array('transactionType' => Types::TRANSACTION_SALE), $default_params);
+
+        return array(
+            array($default_params, $expected_end_point),
+            array($params_with_chargeback, $expected_end_point . '&transactionType=' . Types::TRANSACTION_CHARGEBACK),
+            array($params_with_refund, $expected_end_point . '&transactionType=' . Types::TRANSACTION_REFUND),
+            array($params_with_sale, $expected_end_point . '&transactionType=' . Types::TRANSACTION_SALE)
+        );
     }
 
     /**

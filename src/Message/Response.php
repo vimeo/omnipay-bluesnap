@@ -33,16 +33,16 @@ class Response extends AbstractResponse
             return null;
         }
         $transactions = array();
-        /**
-         * @var array<string, string>
-         */
+
+        /** @var array<string, string> */
         foreach ($this->data['data'] as $row) {
             $params = array(
-                'transactionReference' => $row['Invoice ID'],
-                'date' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
-                'currency' => $row['Auth. Currency'],
                 'amount' => $row['Merchant Sales (Auth Currency)'],
-                'customerReference' => $row['Shopper ID']
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'date' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'status' => $row['Transaction Type'], /** @see Types::TRANSACTION_* for possible values */
+                'transactionReference' => $row['Invoice ID'],
             );
             // grab all the custom parameters
             foreach ($row as $field => $value) {
