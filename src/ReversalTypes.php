@@ -6,6 +6,6 @@ namespace Omnipay\BlueSnap;
 
 class ReversalTypes
 {
-    const CHARGEBACK = 'CHARGEBACK';
-    const REFUND = 'REFUND';
+    const TYPE_CHARGEBACK = 'TYPE_CHARGEBACK';
+    const TYPE_REFUND = 'TYPE_REFUND';
 }
