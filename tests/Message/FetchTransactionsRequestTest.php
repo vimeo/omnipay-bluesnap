@@ -86,15 +86,15 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
             'endTime' => new DateTime($endTime, new DateTimeZone(Constants::BLUESNAP_TIME_ZONE))
         );
 
-        $params_with_chargeback = array_merge(array('transactionType' => Types::TRANSACTION_CHARGEBACK), $default_params);
-        $params_with_refund = array_merge(array('transactionType' => Types::TRANSACTION_REFUND), $default_params);
-        $params_with_sale = array_merge(array('transactionType' => Types::TRANSACTION_SALE), $default_params);
+        $params_with_chargeback = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_CHARGEBACK), $default_params);
+        $params_with_refund = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_REFUND), $default_params);
+        $params_with_sale = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_SALE), $default_params);
 
         return array(
             array($default_params, $expected_end_point),
-            array($params_with_chargeback, $expected_end_point . '&transactionType=' . Types::TRANSACTION_CHARGEBACK),
-            array($params_with_refund, $expected_end_point . '&transactionType=' . Types::TRANSACTION_REFUND),
-            array($params_with_sale, $expected_end_point . '&transactionType=' . Types::TRANSACTION_SALE)
+            array($params_with_chargeback, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_CHARGEBACK),
+            array($params_with_refund, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_REFUND),
+            array($params_with_sale, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_SALE)
         );
     }
 
