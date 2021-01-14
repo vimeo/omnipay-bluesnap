@@ -7,9 +7,9 @@ use DateTimeZone;
 use Exception;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Gateway;
-use Omnipay\BlueSnap\Types;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
+use Omnipay\BlueSnap\Types;
 
 class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 {
