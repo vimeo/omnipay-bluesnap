@@ -4,14 +4,15 @@
 namespace Omnipay\BlueSnap\Message;
 
 
+use Closure;
 use DateTime;
 use DateTimeZone;
+use Omnipay\BlueSnap\Chargeback;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\CreditCard;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\SubscriptionCharge;
 use Omnipay\BlueSnap\Transaction;
-use Omnipay\BlueSnap\Types;
 use Omnipay\Common\Message\RequestInterface;
 use SimpleXMLElement;
 
@@ -478,38 +479,87 @@ class ExtendedResponse extends AbstractResponse
     /**
      * Returns the invoice element corresponding to the requested transaction
      *
-     * When you fetch an order, it may contain multiple invoices (for example,
-     * one for each subscription charge), so this function selects the correct
-     * one.
+     * When you fetch an order, it may contain multiple invoices (for example, one for each subscription charge), so
+     * this function selects the correct one.
      *
+     * Invoices can also contain incidents (refunds, chargebacks) in the response. BlueSnap refers to these as reversal
+     * types. This is currently the only known way of retrieving refunds/chargebacks from a transaction response.
+     *
+     * @param string|null $event_type
      * @return SimpleXMLElement|null
      */
-    protected function getInvoice()
+    protected function getInvoice($event_type = null)
     {
-        if ($this->invoice) {
+        if ($this->invoice !== null) {
             return $this->invoice;
         }
 
-        $this->invoice = null;
-        // find the invoice that was reqeusted
+        $invoice_match = null;
+
+        // find the invoice that was requested
         $request = $this->getRequest();
-        $transactionReference = $request->getTransactionReference();
+        $transaction_reference = $request->getTransactionReference();
 
         if ($this->data instanceof SimpleXMLElement && isset($this->data->{'post-sale-info'}->invoices)) {
-            /**
-             * @var SimpleXMLElement
-             */
+            /** @var SimpleXMLElement */
             $invoices = $this->data->{'post-sale-info'}->invoices;
-            /**
-             * @var SimpleXMLElement
-             */
+            $filter = $this->getInvoiceFilterForEventType($event_type);
+
+            /** @var SimpleXMLElement */
             foreach ($invoices->children() as $invoice) {
-                if (strval($invoice->{'invoice-id'}) === $transactionReference) {
-                    $this->invoice = $invoice;
+                if ($filter($invoice, $transaction_reference)) {
+                    $invoice_match = $invoice;
                     break;
                 }
             }
         }
-        return $this->invoice;
+        return $invoice_match;
+    }
+
+    /**
+     * @param string|null $reversal_type
+     * @return Closure
+     */
+    private function getInvoiceFilterForEventType($reversal_type = null)
+    {
+        $fn = null;
+        if ($reversal_type === Constants::REVERSAL_CHARGEBACK) {
+            $fn =
+                /**
+                 * @param SimpleXMLElement $invoice
+                 * @param string $transaction_reference
+                 * @return bool
+                 */
+                static function ($invoice, $transaction_reference) {
+                    return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
+                        && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_CHARGEBACK
+                        && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
+                };
+        } elseif ($reversal_type === Constants::REVERSAL_REFUND) {
+            $fn =
+                /**
+                 * @param SimpleXMLElement $invoice
+                 * @param string $transaction_reference
+                 * @return bool
+                 */
+                static function ($invoice, $transaction_reference) {
+                    return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
+                        && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_REFUND
+                        && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
+                };
+        } else {
+            $fn =
+                /**
+                 * @param SimpleXMLElement $invoice
+                 * @param string $transaction_reference
+                 * @return bool
+                 */
+                static function ($invoice, $transaction_reference) {
+                    return isset($invoice->{'invoice-id'})
+                        && (string)$invoice->{'invoice-id'} === $transaction_reference;
+                };
+        }
+
+        return $fn;
     }
 }
