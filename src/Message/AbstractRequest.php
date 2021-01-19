@@ -251,23 +251,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @param string $value
-     * @return static
-     */
-    public function setTransactionType($value)
-    {
-        return $this->setParameter('transactionType', $value);
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransactionType()
-    {
-        return $this->getParameter('transactionType') ?: null;
-    }
-
-    /**
      * Return the API endpoint.
      *
      * @return string

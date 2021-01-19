@@ -65,7 +65,7 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $request = $gateway->fetchTransactions($params);
 
         // @codingStandardsIgnoreStart
-        $this->assertSame($expected,$request->getEndpoint());
+        $this->assertSame($expected, $request->getEndpoint());
         // @codingStandardsIgnoreEnd
     }
 
