@@ -432,14 +432,14 @@ class ExtendedResponse extends AbstractResponse
         if (!isset($this->transaction)) {
             $this->invoice = $this->getInvoice();
             if ($this->invoice !== null) {
-                $params = [
+                $params = array(
                     'amount' => $this->getAmount(),
                     'currency' => $this->getCurrency(),
                     'customerReference' => $this->getCustomerReference(),
                     'date' => $this->getDateCreated(),
                     'status' => $this->getStatus(), // Note chargebacks
                     'transactionReference' => $this->getTransactionReference(),
-                ];
+                );
                 $this->transaction = new Transaction($params);
             }
         }
