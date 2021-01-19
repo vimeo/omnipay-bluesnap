@@ -123,10 +123,12 @@ class Gateway extends AbstractGateway
      */
     public function fetchCanceledSubscriptions(array $parameters = array())
     {
+        $class = '\Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest';
+
         /**
          * @var \Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest
          */
-        return $this->createRequest('\Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest', $parameters);
+        return $this->createRequest($class, $parameters);
     }
 
     /**

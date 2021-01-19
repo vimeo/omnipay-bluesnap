@@ -396,7 +396,8 @@ class ExtendedResponse extends AbstractResponse
             /**
              * @var SimpleXMLElement
              */
-            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'};
+            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}
+                ->{'invoice-contact-info'};
             if (isset($contactXml->{'first-name'})) {
                 $cardParams['firstName'] = (string) $contactXml->{'first-name'};
             }

@@ -20,9 +20,10 @@ class Response extends AbstractResponse
     /**
      * Retrieves multiple transactions data from the response.
      *
-     * This data can only be retrieved if the request was issued via @link ReportingFetchTransactionsRequest which uses the
-     * Reporting API. If the transaction data was retrieved via @link ExtendedFetchTransactionRequest this method will
-     * return null. To retrieve transaction data from the extended request see @link ExtendedResponse::getTransaction()
+     * This data can only be retrieved if the request was issued via @link ReportingFetchTransactionsRequest which
+     * uses the Reporting API. If the transaction data was retrieved via @link ExtendedFetchTransactionRequest this
+     * method will return null. To retrieve transaction data from the extended request see
+     * @link ExtendedResponse::getTransaction()
      *
      * @return array<Transaction>|null
      * @throws Exception
