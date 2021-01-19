@@ -7,7 +7,7 @@ use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
 use DateTimeZone;
 
-class FetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
+class ReportingFetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker
@@ -194,7 +194,7 @@ class FetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             }
         }
 
-        $this->setMockHttpResponse('FetchCanceledSubscriptionsSuccess.txt', $replacements);
+        $this->setMockHttpResponse('ReportingFetchCanceledSubscriptionsSuccess.txt', $replacements);
         $response = $this->request->send();
 
         $this->assertTrue($response->isSuccessful());
@@ -224,7 +224,7 @@ class FetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
         $this->request->setStartTime($this->startTime);
         $this->request->setEndTime($this->endTime);
 
-        $this->setMockHttpResponse('FetchCanceledSubscriptionsFailure.txt');
+        $this->setMockHttpResponse('ReportingFetchCanceledSubscriptionsFailure.txt');
         $response = $this->request->send();
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
