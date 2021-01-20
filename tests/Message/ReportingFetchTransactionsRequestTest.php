@@ -2,13 +2,11 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
-use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
-use DateTimeZone;
-use Mockery;
+use Omnipay\BlueSnap\Test\Framework\DataFaker;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 
-class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
+class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker
@@ -16,7 +14,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
     protected $faker;
 
     /**
-     * @var FetchSubscriptionsRequest
+     * @var ReportingFetchTransactionsRequest
      */
     protected $request;
 
@@ -46,7 +44,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             $this->startTime = $temp;
         }
 
-        $this->request = new FetchSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->request = new ReportingFetchTransactionsRequest($this->getHttpClient(), $this->getHttpRequest());
     }
 
     /**
@@ -59,7 +57,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
 
         // @codingStandardsIgnoreStart
         $this->assertSame(
-            'https://sandbox.bluesnap.com/services/2/report/ActiveSubscriptions?period=CUSTOM'
+            'https://sandbox.bluesnap.com/services/2/report/TransactionDetail?period=CUSTOM'
                 . '&from_date=' . urlencode((string) $this->startTime->format('m/d/Y'))
                 . '&to_date=' . urlencode((string) $this->endTime->format('m/d/Y')),
             $this->request->getEndpoint()
@@ -134,43 +132,48 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
         /**
          * @var array<int, array<string, string>>
          */
-        $fakeSubscriptions = array();
+        $fakeTransactions = array();
         for ($i = 1; $i <= 2; $i++) {
             $currency = $this->faker->currency();
-            $fakeSubscriptions[$i] = array(
-                'SUBSCRIPTION_REFERENCE' => $this->faker->subscriptionReference(),
+            $fakeTransactions[$i] = array(
+                'TRANSACTION_REFERENCE' => $this->faker->transactionReference(),
+                'DATE' => $this->faker->datetime()->format('m/d/Y'),
                 'CURRENCY' => $currency,
-                'AMOUNT' => $this->faker->monetaryAmount($currency)
+                'AMOUNT' => $this->faker->monetaryAmount($currency),
+                'CUSTOMER_REFERENCE' => $this->faker->customerReference(),
+                'CUSTOM_1' => $this->faker->customParameter(),
+                'CUSTOM_2' => $this->faker->customParameter()
             );
         }
 
         $replacements = array();
-        foreach ($fakeSubscriptions as $i => $row) {
+        foreach ($fakeTransactions as $i => $row) {
             foreach ($row as $field => $value) {
                 $replacements[$field . '_' . (string) $i] = $value;
             }
         }
 
-        $this->setMockHttpResponse('FetchSubscriptionsSuccess.txt', $replacements);
+        $this->setMockHttpResponse('ReportingFetchTransactionsSuccess.txt', $replacements);
         $response = $this->request->send();
-
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('200', $response->getCode());
-        $subscriptions = $response->getSubscriptions();
-        $this->assertCount(2, $subscriptions);
-        if ($subscriptions) {
-            foreach ($subscriptions as $i => $subscription) {
-                $fakeSubscription = $fakeSubscriptions[intval($i) + 1];
-                $this->assertSame(
-                    $fakeSubscription['SUBSCRIPTION_REFERENCE'],
-                    $subscription->getSubscriptionReference()
-                );
-                $this->assertSame($fakeSubscription['CURRENCY'], $subscription->getCurrency());
-                $this->assertSame($fakeSubscription['AMOUNT'], $subscription->getAmount());
+        $transactions = $response->getTransactions();
+        $this->assertCount(2, $transactions);
+        if ($transactions) {
+            foreach ($transactions as $i => $transaction) {
+                $fakeTransaction = $fakeTransactions[intval($i) + 1];
+                $date = $transaction->getDate();
+                $this->assertSame($fakeTransaction['TRANSACTION_REFERENCE'], $transaction->getTransactionReference());
+                $this->assertSame($fakeTransaction['DATE'], $date ? $date->format('m/d/Y') : '');
+                $this->assertSame($fakeTransaction['CURRENCY'], $transaction->getCurrency());
+                $this->assertSame($fakeTransaction['AMOUNT'], $transaction->getAmount());
+                $this->assertSame($fakeTransaction['CUSTOMER_REFERENCE'], $transaction->getCustomerReference());
+                $this->assertSame($fakeTransaction['CUSTOM_1'], $transaction->getCustomParameter1());
+                $this->assertSame($fakeTransaction['CUSTOM_2'], $transaction->getCustomParameter2());
             }
         }
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -181,11 +184,11 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
         $this->request->setStartTime($this->startTime);
         $this->request->setEndTime($this->endTime);
 
-        $this->setMockHttpResponse('FetchSubscriptionsFailure.txt');
+        $this->setMockHttpResponse('ReportingFetchTransactionsFailure.txt');
         $response = $this->request->send();
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invalid Date Range', $response->getMessage());
+        $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
 }

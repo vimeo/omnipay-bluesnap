@@ -25,14 +25,15 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     const XMLNS = 'http://ws.plimus.com';
 
     /**
-     * @var Response
+     * @var string
+     */
+    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\AbstractResponse';
+
+    /**
+     * @var AbstractResponse
      */
     protected $response;
 
-    /**
-     * @var string
-     */
-    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\Response';
 
     /**
      * Gets the username for making API calls
@@ -305,7 +306,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * Makes the request
      *
      * @param SimpleXMLElement|null $data
-     * @return Response
+     *
+     * @return AbstractResponse
      *
      * @throws RuntimeException if $data is invalid XML
      * @throws Exception if there is a problem when initiating the request.
@@ -391,7 +393,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         }
 
         /**
-         * @var Response
+         * @var AbstractResponse
          */
         $this->response = new static::$RESPONSE_CLASS($this, $responseData);
 
@@ -425,12 +427,12 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * Overriding to provide a more precise return type
      *
-     * @return Response
+     * @return AbstractResponse
      */
     public function send()
     {
         /**
-         * @var Response
+         * @var AbstractResponse
          */
         return parent::send();
     }

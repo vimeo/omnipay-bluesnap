@@ -97,7 +97,7 @@ class GatewayTest extends GatewayTestCase
                 'endTime' => $endTime
             )
         );
-        $this->assertInstanceOf('Omnipay\BlueSnap\Message\FetchTransactionsRequest', $request);
+        $this->assertInstanceOf('Omnipay\BlueSnap\Message\ReportingFetchTransactionsRequest', $request);
         $this->assertSame($startTime, $request->getStartTime());
         $this->assertSame($endTime, $request->getEndTime());
     }
@@ -115,7 +115,7 @@ class GatewayTest extends GatewayTestCase
                 'endTime' => $endTime
             )
         );
-        $this->assertInstanceOf('Omnipay\BlueSnap\Message\FetchSubscriptionsRequest', $request);
+        $this->assertInstanceOf('Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest', $request);
         $this->assertSame($startTime, $request->getStartTime());
         $this->assertSame($endTime, $request->getEndTime());
     }
@@ -133,7 +133,7 @@ class GatewayTest extends GatewayTestCase
                 'endTime' => $endTime
             )
         );
-        $this->assertInstanceOf('Omnipay\BlueSnap\Message\FetchCanceledSubscriptionsRequest', $request);
+        $this->assertInstanceOf('Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest', $request);
         $this->assertSame($startTime, $request->getStartTime());
         $this->assertSame($endTime, $request->getEndTime());
     }

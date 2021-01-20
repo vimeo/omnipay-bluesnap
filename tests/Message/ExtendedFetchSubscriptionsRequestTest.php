@@ -128,8 +128,8 @@ class ExtendedFetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
                 $this->assertSame($fakeSubscription['AMOUNT'], $subscription->getAmount());
             }
         }
-        $this->assertNull($response->getMessage());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -148,7 +148,7 @@ class ExtendedFetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'User API_1234567890123456789012 is not authorized to retrieve subscription history for SHOPPER ID '
                 . $this->customerReference . '.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

@@ -7,8 +7,8 @@ use Omnipay\BlueSnap\Constants;
 /**
  * Fetch subscriptions by customer reference.
  *
- * If you want to fetch all subscriptions in a time range, see FetchSubscriptionsRequest.
- * If you want to fetch all canceled subscriptions, see FetchCanceledSubscriptionsRequest.
+ * If you want to fetch all subscriptions in a time range, see ReportingFetchSubscriptionsRequest.
+ * If you want to fetch all canceled subscriptions, see ReportingFetchCanceledSubscriptionsRequest.
  * If you only want to fetch a single subscription, see ExtendedFetchSubscriptionRequest.
  *
  * Parameters:

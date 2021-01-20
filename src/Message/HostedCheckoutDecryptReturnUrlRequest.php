@@ -2,9 +2,8 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\Common\Exception\InvalidRequestException;
-use SimpleXMLElement;
 use Omnipay\BlueSnap\Constants;
+use SimpleXMLElement;
 
 /**
  * Decrypts an encrypted return URL.
@@ -51,8 +50,13 @@ use Omnipay\BlueSnap\Constants;
  *   }
  * </code>
  */
-class HostedCheckoutDecryptReturnUrlRequest extends ExtendedAbstractRequest
+class HostedCheckoutDecryptReturnUrlRequest extends AbstractRequest
 {
+    /**
+     * @var string
+     */
+    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\HostedCheckoutDecryptReturnUrlResponse';
+
     /**
      * @return SimpleXMLElement
      * @psalm-suppress PossiblyInvalidArrayAccess because the existence of the key is checked first before using it.
@@ -101,5 +105,18 @@ class HostedCheckoutDecryptReturnUrlRequest extends ExtendedAbstractRequest
     public function getHttpMethod()
     {
         return Constants::HTTP_METHOD_POST;
+    }
+
+    /**
+     * Overriding to provide a more precise return type
+     *
+     * @return HostedCheckoutDecryptReturnUrlResponse
+     */
+    public function send()
+    {
+        /**
+         * @var HostedCheckoutDecryptReturnUrlResponse
+         */
+        return parent::send();
     }
 }

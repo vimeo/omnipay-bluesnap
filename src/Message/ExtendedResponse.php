@@ -1,118 +1,47 @@
 <?php
 
+
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\Common\Message\AbstractResponse;
+
 use DateTime;
 use DateTimeZone;
 use Omnipay\BlueSnap\Constants;
-use Omnipay\BlueSnap\Transaction;
+use Omnipay\BlueSnap\CreditCard;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\SubscriptionCharge;
+use Omnipay\BlueSnap\Transaction;
+use Omnipay\BlueSnap\Types;
+use Omnipay\Common\Message\RequestInterface;
 use SimpleXMLElement;
-use Omnipay\BlueSnap\CreditCard;
 
 /**
- * BlueSnap response object. See Request files for usage.
+ * BlueSnap response object for the Extended Payments API. See Request files or developer docs for usage.
+ *
+ * @link https://developers.bluesnap.com/v8976-Extended/docs
+ *
+ * @package Omnipay\BlueSnap\Message
  */
-class Response extends AbstractResponse
+class ExtendedResponse extends AbstractResponse
 {
-    /**
-     * HTTP request id
-     *
-     * @var string|null
+     /**
+     * @var Transaction|null
      */
-    protected $requestId;
-
-    /**
-     * HTTP response code
-     *
-     * @var string|null
-     */
-    protected $code;
-
-    /**
-     * @var string|SimpleXMLElement|array
-     */
-    protected $data;
+    protected $transaction;
 
     /**
      * @var SimpleXMLElement|null
      */
-    protected $invoice;
+    private $invoice;
 
     /**
-     * Returns true if the request was successful, false otherwise
-     *
-     * @return bool
+     * @param RequestInterface $request the initiating request.
+     * @param mixed $data
      */
-    public function isSuccessful()
+    public function __construct(RequestInterface $request, $data)
     {
-        return substr($this->getCode() ?: '', 0, 1) === '2';
-    }
-
-    /**
-     * Get the ID from the HTTP request
-     *
-     * @return string|null
-     */
-    public function getRequestId()
-    {
-        return $this->requestId;
-    }
-
-    /**
-     * Set the ID from the HTTP request
-     *
-     * @param string|null $requestId
-     * @return static
-     */
-    public function setRequestId($requestId)
-    {
-        $this->requestId = $requestId;
-        return $this;
-    }
-
-    /**
-     * Get the HTTP response code
-     *
-     * @return string|null
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    /**
-     * Set the HTTP response code
-     *
-     * @param string $code
-     * @return static
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
-        return $this;
-    }
-
-    /**
-     * Get the error message from the response. Returns null if request was successful.
-     *
-     * @return string|null
-     * @psalm-suppress MixedPropertyFetch because we check the data typing before using.
-     */
-    public function getMessage()
-    {
-        if (!$this->isSuccessful()) {
-            if ($this->data instanceof SimpleXMLElement && isset($this->data->message->description)) {
-                return (string) $this->data->message->description;
-            }
-            if (is_string($this->data)) {
-                return $this->data;
-            }  // some error responses are plain text instead of XML
-        }
-
-        return null;
+        parent::__construct($request, $data);
+        $this->transaction = null;
     }
 
     /**
@@ -138,7 +67,7 @@ class Response extends AbstractResponse
         return null;
     }
 
-    /**
+     /**
      * Get the gateway's identifier for the transaction
      *
      * @return string|null
@@ -146,9 +75,9 @@ class Response extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-            return (string) $invoice->{'invoice-id'};
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+            return (string) $this->invoice->{'invoice-id'};
         }
         if ($this->data instanceof SimpleXMLElement
             && isset($this->data->{'charge-invoice-info'}->{'invoice-id'})) {
@@ -183,9 +112,10 @@ class Response extends AbstractResponse
         if (!$this->data instanceof SimpleXMLElement) {
             return null;
         }
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-            return (string) $invoice->{'financial-transactions'}->{'financial-transaction'}->amount;
+
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+            return (string) $this->invoice->{'financial-transactions'}->{'financial-transaction'}->amount;
         }
         // if an override charge is set, that's the current amount, not the catalog (original) one
         if (isset($this->data->{'override-recurring-charge'}->amount)) {
@@ -217,6 +147,7 @@ class Response extends AbstractResponse
         }
         return null;
     }
+
     /**
      * Get the currency of a transaction or subscription
      *
@@ -228,9 +159,9 @@ class Response extends AbstractResponse
         if (!$this->data instanceof SimpleXMLElement) {
             return null;
         }
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-            return (string) $invoice->{'financial-transactions'}->{'financial-transaction'}->currency;
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+            return (string) $this->invoice->{'financial-transactions'}->{'financial-transaction'}->currency;
         }
         // if an override charge is set, that's the current currency, not the catalog (original) one
         if (isset($this->data->{'override-recurring-charge'}->currency)) {
@@ -282,9 +213,37 @@ class Response extends AbstractResponse
         return !empty($subscriptionCharges) ? $subscriptionCharges : null;
     }
 
+    /**
+     * @return array<Subscription>|null
+     * @psalm-suppress MixedPropertyFetch
+     * @psalm-suppress MixedAssignment
+     */
+    public function getSubscriptions()
+    {
+        // data can be SimpleXMLElement or JSON object
+        if (!isset($this->data) && !isset($this->data['data'])) {
+            return null;
+        }
+
+        $subscriptions = array();
+        if ($this->data instanceof SimpleXMLElement && isset($this->data->{'subscriptions'})) {
+            foreach ($this->data->{'subscriptions'}->children() as $sub) {
+                $subscriptions[] = new Subscription(array(
+                    'subscriptionReference' => (string) $sub->{'subscription-id'},
+                    'currency' => (string) $sub->{'catalog-recurring-charge'}->currency,
+                    'amount' => (string) $sub->{'catalog-recurring-charge'}->amount,
+                    'status' => (string) $sub->{'status'}
+                ));
+            }
+            return $subscriptions;
+        }
+    }
 
     /**
      * Function to get a subscription status.
+     *
+     * Note that chargeback and refund statuses are not store here. To see if a transaction contains a refund or a
+     * chargeback refer to the following:
      *
      * @return string|null
      * @psalm-suppress MixedPropertyFetch
@@ -295,9 +254,9 @@ class Response extends AbstractResponse
             return null;
         }
         // Check if we have invoice and invoice status
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-            return (string)$invoice->{'financial-transactions'}->{'financial-transaction'}->{'status'};
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+            return (string)$this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'status'};
         }
         // check if status element is set and return
         if (isset($this->data->{'status'})) {
@@ -318,9 +277,9 @@ class Response extends AbstractResponse
             return null;
         }
         // Check if we have invoice and invoice plan reference (Bluesnap contract)
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-            return (string) $invoice->{'financial-transactions'}
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+            return (string) $this->invoice->{'financial-transactions'}
                 ->{'financial-transaction'}
                 ->{'skus'}
                 ->{'sku'}
@@ -347,10 +306,10 @@ class Response extends AbstractResponse
             return null;
         }
 
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
             return new DateTime(
-                $invoice->{'financial-transactions'}->{'financial-transaction'}->{'date-created'},
+                $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'date-created'},
                 new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)
             );
         }
@@ -389,95 +348,6 @@ class Response extends AbstractResponse
     }
 
     /**
-     * @return array<Transaction>|null
-     */
-    public function getTransactions()
-    {
-        if (!is_array($this->data) || !isset($this->data['data'])) {
-            return null;
-        }
-        $transactions = array();
-        /**
-         * @var array<string, string>
-         */
-        foreach ($this->data['data'] as $row) {
-            $params = array(
-                'transactionReference' => $row['Invoice ID'],
-                'date' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
-                'currency' => $row['Auth. Currency'],
-                'amount' => $row['Merchant Sales (Auth Currency)'],
-                'customerReference' => $row['Shopper ID']
-            );
-            // grab all the custom parameters
-            foreach ($row as $field => $value) {
-                if (strpos($field, 'Custom Field') !== false && $value !== '') {
-                    $parts = explode(' ', $field);
-                    $index = $parts[2];
-                    $params['customParameter' . $index] = $value;
-                }
-            }
-            $transactions[] = new Transaction($params);
-        }
-        return $transactions;
-    }
-
-    /**
-     * @return array<Subscription>|null
-     * @psalm-suppress MixedPropertyFetch
-     * @psalm-suppress MixedAssignment
-     */
-    public function getSubscriptions()
-    {
-        // data can be SimpleXMLElement or JSON object
-        if (!isset($this->data) && !isset($this->data['data'])) {
-            return null;
-        }
-
-        $subscriptions = array();
-        if ($this->data instanceof SimpleXMLElement && isset($this->data->{'subscriptions'})) {
-            foreach ($this->data->{'subscriptions'}->children() as $sub) {
-                $subscriptions[] = new Subscription(array(
-                    'subscriptionReference' => (string) $sub->{'subscription-id'},
-                    'currency' => (string) $sub->{'catalog-recurring-charge'}->currency,
-                    'amount' => (string) $sub->{'catalog-recurring-charge'}->amount,
-                    'status' => (string) $sub->{'status'}
-                ));
-            }
-            return $subscriptions;
-        }
-
-        if (is_array($this->data)) {
-            /** @var array<string, string> */
-            foreach ($this->data['data'] as $row) {
-                $subscriptions[] = new Subscription(array(
-                    'subscriptionReference' => $row['Subscription ID'],
-                    'currency' => $row['Auth. Currency'],
-                    'amount' => isset($row['Price (Auth. Currency)'])
-                    ? $row['Price (Auth. Currency)']
-                    : $row['Last Charge Price (Auth. Currency)']
-                ));
-            }
-        }
-        return $subscriptions;
-    }
-
-    /**
-     * Get the decrypted parameters from the return url after a HostedCheckoutDecryptReturnUrlRequest
-     * Returns an array of paramName => paramValue
-     *
-     * @return array|null
-     * @psalm-suppress MixedPropertyFetch
-     */
-    public function getDecryptedParameters()
-    {
-        if ($this->data instanceof SimpleXMLElement && isset($this->data->{'decrypted-token'})) {
-            parse_str((string) $this->data->{'decrypted-token'}, $result);
-            return $result ?: null;
-        }
-        return null;
-    }
-
-    /**
      * Gets the credit card from a fetch transaction or subscription request
      *
      * @return null|CreditCard
@@ -487,14 +357,14 @@ class Response extends AbstractResponse
         $cardParams = array();
 
         $cardXml = null;
-        $invoice = $this->getInvoice();
-        if ($invoice instanceof SimpleXMLElement
-            && isset($invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'})
+        $this->invoice = $this->getInvoice();
+        if ($this->invoice instanceof SimpleXMLElement
+            && isset($this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'})
         ) {
             /**
              * @var SimpleXMLElement
              */
-            $cardXml = $invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'};
+            $cardXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'};
         } elseif ($this->data instanceof SimpleXMLElement && isset($this->data->{'credit-card'})) {
             /**
              * @var SimpleXMLElement
@@ -517,13 +387,14 @@ class Response extends AbstractResponse
             }
         }
 
-        if ($invoice instanceof SimpleXMLElement
-            && isset($invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'})
+        if ($this->invoice instanceof SimpleXMLElement
+            && isset($this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'})
         ) {
             /**
              * @var SimpleXMLElement
              */
-            $contactXml = $invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'};
+            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}
+                ->{'invoice-contact-info'};
             if (isset($contactXml->{'first-name'})) {
                 $cardParams['firstName'] = (string) $contactXml->{'first-name'};
             }
@@ -548,6 +419,29 @@ class Response extends AbstractResponse
             return new CreditCard($cardParams);
         }
         return null;
+    }
+
+    /**
+     * @return Transaction|null
+     */
+    public function getTransaction()
+    {
+        if (!isset($this->transaction)) {
+            $this->invoice = $this->getInvoice();
+            if ($this->invoice !== null) {
+                $params = array(
+                    'amount' => $this->getAmount(),
+                    'currency' => $this->getCurrency(),
+                    'customerReference' => $this->getCustomerReference(),
+                    'date' => $this->getDateCreated(),
+                    'status' => $this->getStatus(), // Note chargebacks
+                    'transactionReference' => $this->getTransactionReference(),
+                );
+                $this->transaction = new Transaction($params);
+            }
+        }
+
+        return $this->transaction;
     }
 
     /**
@@ -615,18 +509,5 @@ class Response extends AbstractResponse
             }
         }
         return $this->invoice;
-    }
-
-    /**
-     * Overriding to provide more specific return type
-     *
-     * @return \Omnipay\BlueSnap\Message\AbstractRequest
-     */
-    public function getRequest()
-    {
-        /**
-         * @var \Omnipay\BlueSnap\Message\AbstractRequest
-         */
-        return parent::getRequest();
     }
 }

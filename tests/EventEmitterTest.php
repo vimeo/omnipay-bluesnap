@@ -78,7 +78,7 @@ class EventEmitterTest extends OmnipayBlueSnapTestCase
                 function (ResponseEvent $event) use ($class) {
                     /** @var ResponseInterface $response */
                     $response = $event['response'];
-                    $class->assertInstanceOf('\Omnipay\BlueSnap\Message\Response', $response);
+                    $class->assertInstanceOf('\Omnipay\BlueSnap\Message\ExtendedResponse', $response);
                 }
             );
 

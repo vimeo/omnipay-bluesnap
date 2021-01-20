@@ -215,7 +215,7 @@ class ExtendedGatewayTest extends GatewayTestCase
                 'endTime' => $endTime
             )
         );
-        $this->assertInstanceOf('Omnipay\BlueSnap\Message\FetchSubscriptionsRequest', $request);
+        $this->assertInstanceOf('Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest', $request);
         $this->assertSame($startTime, $request->getStartTime());
         $this->assertSame($endTime, $request->getEndTime());
     }

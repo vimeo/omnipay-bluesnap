@@ -87,7 +87,7 @@ class ExtendedReactivateSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('204', $response->getCode());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -108,7 +108,7 @@ class ExtendedReactivateSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'User API_1234567890123456789012 is not authorized to update subscription ID '
                 . $subscriptionReference . '.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

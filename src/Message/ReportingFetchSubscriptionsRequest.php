@@ -5,7 +5,7 @@ namespace Omnipay\BlueSnap\Message;
 /**
  * Fetch all subscriptions in a time range.
  *
- * If you want to fetch all canceled subscriptions, see FetchCanceledSubscriptionsRequest.
+ * If you want to fetch all canceled subscriptions, see ReportingFetchCanceledSubscriptionsRequest.
  * If you only want to fetch a single subscription, see ExtendedFetchSubscriptionRequest.
  * If you want to fetch all subscriptions by customer, see ExtendedFetchSubscriptionsRequest.
  *
@@ -42,7 +42,12 @@ namespace Omnipay\BlueSnap\Message;
  *   }
  * </code>
  */
-class FetchSubscriptionsRequest extends FetchTransactionsRequest
+class ReportingFetchSubscriptionsRequest extends ReportingAbstractRequest
 {
     const REPORT_NAME = 'ActiveSubscriptions';
+
+    public function getReportName()
+    {
+        return self::REPORT_NAME;
+    }
 }

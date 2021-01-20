@@ -120,7 +120,7 @@ class ExtendedUpdateSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('204', $response->getCode());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -141,7 +141,7 @@ class ExtendedUpdateSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'The shopper: ' . $customerReference . ' has not given prior consent to certain'
                 . ' additional charges and so this operation cannot be processed.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

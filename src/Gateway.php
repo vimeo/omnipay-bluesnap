@@ -81,49 +81,54 @@ class Gateway extends AbstractGateway
     /**
      * Fetch all transactions in a time range.
      *
-     * See Message\FetchTransactionsRequest for more details.
+     * See Message\ReportingFetchTransactionsRequest for more details.
      *
      * @param array $parameters
-     * @return \Omnipay\BlueSnap\Message\FetchTransactionsRequest
+     *
+     * @return \Omnipay\BlueSnap\Message\ReportingFetchTransactionsRequest
      */
     public function fetchTransactions(array $parameters = array())
     {
         /**
-         * @var \Omnipay\BlueSnap\Message\FetchTransactionsRequest
+         * @var \Omnipay\BlueSnap\Message\ReportingFetchTransactionsRequest
          */
-        return $this->createRequest('\Omnipay\BlueSnap\Message\FetchTransactionsRequest', $parameters);
+        return $this->createRequest('\Omnipay\BlueSnap\Message\ReportingFetchTransactionsRequest', $parameters);
     }
 
     /**
      * Fetch all active subscriptions in a time range.
      *
-     * See Message\FetchSubscriptionsRequest for more details.
+     * See Message\ReportingFetchSubscriptionsRequest for more details.
      *
      * @param array $parameters
-     * @return \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
+     *
+     * @return \Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest
      */
     public function fetchSubscriptions(array $parameters = array())
     {
         /**
-         * @var \Omnipay\BlueSnap\Message\FetchSubscriptionsRequest
+         * @var \Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest
          */
-        return $this->createRequest('\Omnipay\BlueSnap\Message\FetchSubscriptionsRequest', $parameters);
+        return $this->createRequest('\Omnipay\BlueSnap\Message\ReportingFetchSubscriptionsRequest', $parameters);
     }
 
     /**
      * Fetch all canceled subscriptions in a time range.
      *
-     * See Message\FetchCanceledSubscriptionsRequest for more details.
+     * See Message\ReportingFetchCanceledSubscriptionsRequest for more details.
      *
      * @param array $parameters
-     * @return \Omnipay\BlueSnap\Message\FetchCanceledSubscriptionsRequest
+     *
+     * @return \Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest
      */
     public function fetchCanceledSubscriptions(array $parameters = array())
     {
+        $class = '\Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest';
+
         /**
-         * @var \Omnipay\BlueSnap\Message\FetchCanceledSubscriptionsRequest
+         * @var \Omnipay\BlueSnap\Message\ReportingFetchCanceledSubscriptionsRequest
          */
-        return $this->createRequest('\Omnipay\BlueSnap\Message\FetchCanceledSubscriptionsRequest', $parameters);
+        return $this->createRequest($class, $parameters);
     }
 
     /**
