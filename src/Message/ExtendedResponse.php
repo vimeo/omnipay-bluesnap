@@ -245,9 +245,6 @@ class ExtendedResponse extends AbstractResponse
      * Note that chargeback and refund statuses are not store here. To see if a transaction contains a refund or a
      * chargeback refer to the following:
      *
-     * @see Response::getChargebacks() or
-     * @see Response::getRefunds()
-     *
      * @return string|null
      * @psalm-suppress MixedPropertyFetch
      */

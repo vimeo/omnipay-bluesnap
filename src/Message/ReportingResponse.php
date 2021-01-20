@@ -8,14 +8,13 @@ use Exception;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\Transaction;
-use SimpleXMLElement;
 
 /**
- * BlueSnap response object for the (non-extended) Payments API. See Request files or developer docs for usage.
+ * BlueSnap response object for the Reporting API. See Reporting*Request files or developer docs for usage.
  *
- * @link https://developers.bluesnap.com/v8976-JSON/docs
+ * @link https://developers.bluesnap.com/v8976-Tools/docs/reporting-api-overview
  */
-class Response extends AbstractResponse
+class ReportingResponse extends AbstractResponse
 {
     /**
      * Retrieves multiple transactions data from the response.
