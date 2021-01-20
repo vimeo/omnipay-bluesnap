@@ -209,7 +209,7 @@ class HostedCheckoutPurchaseRequestTest extends OmnipayBlueSnapTestCase
             'https://sandbox.bluesnap.com/buynow/checkout?storeId=' . $this->storeReference . '&enc=' . $encryptedToken,
             $response->getRedirectUrl()
         );
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -226,7 +226,7 @@ class HostedCheckoutPurchaseRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'Parameter Encryption service failed due to problematic input. Missing Data Protection Key: '
                 . 'please define it in the Console and try again.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

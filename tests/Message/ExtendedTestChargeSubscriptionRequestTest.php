@@ -100,7 +100,7 @@ class ExtendedTestChargeSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('204', $response->getCode());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -118,7 +118,7 @@ class ExtendedTestChargeSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         // @codingStandardsIgnoreStart
         $this->assertSame(
             'Call to runSpecificSubscription failed, subscriptionId ' . $this->subscriptionReference . '.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

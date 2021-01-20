@@ -113,12 +113,13 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     /**
      * Get the error message from the response. Returns null if request was successful.
      *
-     * Since this library works with both XML and JSON response data, this function checks for both types.
+     * A response error can is returned as XML if no application type is specified. We also need to account for JSON
+     * error responses returned as strings.
      *
      * @return string|null
      * @psalm-suppress MixedPropertyFetch because we check the data typing before using.
      */
-    public function getMessage()
+    public function getErrorMessage()
     {
         if (!$this->isSuccessful()) {
             if ($this->data instanceof SimpleXMLElement && isset($this->data->message->description)) {

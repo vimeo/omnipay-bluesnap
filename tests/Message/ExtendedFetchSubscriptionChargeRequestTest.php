@@ -126,7 +126,7 @@ class ExtendedFetchSubscriptionChargeRequestTest extends OmnipayBlueSnapTestCase
             $responseDateCreated ? $responseDateCreated->getTimezone()->getName() : null
         );
         $this->assertSame($transactionReference, $response->getTransactionReference());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -145,7 +145,7 @@ class ExtendedFetchSubscriptionChargeRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'Subscription Charge retrieval service failure because subscriptionCharge ID: '
                 . $this->subscriptionChargeReference . ' was not found.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

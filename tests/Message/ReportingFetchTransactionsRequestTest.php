@@ -173,7 +173,7 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
                 $this->assertSame($fakeTransaction['CUSTOM_2'], $transaction->getCustomParameter2());
             }
         }
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -189,6 +189,6 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invalid Date Range', $response->getMessage());
+        $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
 }

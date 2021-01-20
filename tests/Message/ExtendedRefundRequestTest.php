@@ -175,7 +175,7 @@ class ExtendedRefundRequestTest extends OmnipayBlueSnapTestCase
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('204', $response->getCode());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -188,6 +188,6 @@ class ExtendedRefundRequestTest extends OmnipayBlueSnapTestCase
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invoice has already been fully refunded.', $response->getMessage());
+        $this->assertSame('Invoice has already been fully refunded.', $response->getErrorMessage());
     }
 }

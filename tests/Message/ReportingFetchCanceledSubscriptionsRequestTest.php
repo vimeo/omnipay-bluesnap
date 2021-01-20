@@ -213,7 +213,7 @@ class ReportingFetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTest
                 $this->assertSame($fakeSubscription['AMOUNT'], $subscription->getAmount());
             }
         }
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -229,6 +229,6 @@ class ReportingFetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTest
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invalid Date Range', $response->getMessage());
+        $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
 }
