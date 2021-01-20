@@ -8,21 +8,21 @@ use Exception;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\Transaction;
-use SimpleXMLElement;
 
 /**
- * BlueSnap response object for the (non-extended) Payments API. See Request files or developer docs for usage.
+ * BlueSnap response object for the Reporting API. See Reporting*Request files or developer docs for usage.
  *
- * @link https://developers.bluesnap.com/v8976-JSON/docs
+ * @link https://developers.bluesnap.com/v8976-Tools/docs/reporting-api-overview
  */
-class Response extends AbstractResponse
+class ReportingResponse extends AbstractResponse
 {
     /**
      * Retrieves multiple transactions data from the response.
      *
-     * This data can only be retrieved if the request was issued via @link ReportingFetchTransactionsRequest which uses the
-     * Reporting API. If the transaction data was retrieved via @link ExtendedFetchTransactionRequest this method will
-     * return null. To retrieve transaction data from the extended request see @link ExtendedResponse::getTransaction()
+     * This data can only be retrieved if the request was issued via @link ReportingFetchTransactionsRequest which
+     * uses the Reporting API. If the transaction data was retrieved via @link ExtendedFetchTransactionRequest this
+     * method will return null. To retrieve transaction data from the extended request see
+     * @link ExtendedResponse::getTransaction()
      *
      * @return array<Transaction>|null
      * @throws Exception
@@ -83,21 +83,5 @@ class Response extends AbstractResponse
             }
         }
         return $subscriptions;
-    }
-
-    /**
-     * Get the decrypted parameters from the return url after a HostedCheckoutDecryptReturnUrlRequest
-     * Returns an array of paramName => paramValue
-     *
-     * @return array|null
-     * @psalm-suppress MixedPropertyFetch
-     */
-    public function getDecryptedParameters()
-    {
-        if ($this->data instanceof SimpleXMLElement && isset($this->data->{'decrypted-token'})) {
-            parse_str((string) $this->data->{'decrypted-token'}, $result);
-            return $result ?: null;
-        }
-        return null;
     }
 }

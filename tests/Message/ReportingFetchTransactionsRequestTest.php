@@ -9,9 +9,8 @@ use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Gateway;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
-use Omnipay\BlueSnap\Types;
 
-class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
+class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker
@@ -186,7 +185,7 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
             }
         }
 
-        $this->setMockHttpResponse('FetchTransactionsSuccess.txt', $replacements);
+        $this->setMockHttpResponse('ReportingFetchTransactionsSuccess.txt', $replacements);
         $response = $this->request->send();
         $this->assertTrue($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
@@ -206,7 +205,7 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
                 $this->assertSame($fakeTransaction['CUSTOM_2'], $transaction->getCustomParameter2());
             }
         }
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -217,11 +216,11 @@ class FetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $this->request->setStartTime($this->startTime);
         $this->request->setEndTime($this->endTime);
 
-        $this->setMockHttpResponse('FetchTransactionsFailure.txt');
+        $this->setMockHttpResponse('ReportingFetchTransactionsFailure.txt');
         $response = $this->request->send();
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invalid Date Range', $response->getMessage());
+        $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
 }

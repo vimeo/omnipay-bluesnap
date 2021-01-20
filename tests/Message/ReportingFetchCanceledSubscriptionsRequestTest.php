@@ -6,9 +6,8 @@ use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
 use DateTimeZone;
-use Mockery;
 
-class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
+class ReportingFetchCanceledSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
 {
     /**
      * @var DataFaker
@@ -16,7 +15,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
     protected $faker;
 
     /**
-     * @var ReportingFetchSubscriptionsRequest
+     * @var ReportingFetchCanceledSubscriptionsRequest
      */
     protected $request;
 
@@ -46,7 +45,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             $this->startTime = $temp;
         }
 
-        $this->request = new ReportingFetchSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
+        $this->request = new ReportingFetchCanceledSubscriptionsRequest($this->getHttpClient(), $this->getHttpRequest());
     }
 
     /**
@@ -59,7 +58,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
 
         // @codingStandardsIgnoreStart
         $this->assertSame(
-            'https://sandbox.bluesnap.com/services/2/report/ActiveSubscriptions?period=CUSTOM'
+            'https://sandbox.bluesnap.com/services/2/report/CanceledSubscriptions?period=CUSTOM'
                 . '&from_date=' . urlencode((string) $this->startTime->format('m/d/Y'))
                 . '&to_date=' . urlencode((string) $this->endTime->format('m/d/Y')),
             $this->request->getEndpoint()
@@ -73,6 +72,50 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
     public function testHttpMethod()
     {
         $this->assertSame('GET', $this->request->getHttpMethod());
+    }
+
+    /**
+     * @return void
+     */
+    public function testStartTime()
+    {
+        $startTime = $this->faker->datetime();
+        $this->assertSame($this->request, $this->request->setStartTime($startTime));
+        $this->assertSame($startTime, $this->request->getStartTime());
+    }
+
+    /**
+     * @return void
+     * @expectedException \Omnipay\Common\Exception\InvalidRequestException
+     * @expectedExceptionMessage Dates must be provided in the Etc/GMT+8 time zone
+     */
+    public function testStartTimeWrongTimeZone()
+    {
+        $startTime = $this->faker->datetime();
+        $startTime->setTimezone(new DateTimeZone('Europe/London'));
+        $this->request->setStartTime($startTime);
+    }
+
+    /**
+     * @return void
+     */
+    public function testEndTime()
+    {
+        $endTime = $this->faker->datetime();
+        $this->assertSame($this->request, $this->request->setEndTime($endTime));
+        $this->assertSame($endTime, $this->request->getEndTime());
+    }
+
+    /**
+     * @return void
+     * @expectedException \Omnipay\Common\Exception\InvalidRequestException
+     * @expectedExceptionMessage Dates must be provided in the Etc/GMT+8 time zone
+     */
+    public function testEndTimeWrongTimeZone()
+    {
+        $endTime = $this->faker->datetime();
+        $endTime->setTimezone(new DateTimeZone('Europe/London'));
+        $this->request->setEndTime($endTime);
     }
 
     /**
@@ -151,7 +194,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
             }
         }
 
-        $this->setMockHttpResponse('FetchSubscriptionsSuccess.txt', $replacements);
+        $this->setMockHttpResponse('ReportingFetchCanceledSubscriptionsSuccess.txt', $replacements);
         $response = $this->request->send();
 
         $this->assertTrue($response->isSuccessful());
@@ -170,7 +213,7 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
                 $this->assertSame($fakeSubscription['AMOUNT'], $subscription->getAmount());
             }
         }
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -181,11 +224,11 @@ class FetchSubscriptionsRequestTest extends OmnipayBlueSnapTestCase
         $this->request->setStartTime($this->startTime);
         $this->request->setEndTime($this->endTime);
 
-        $this->setMockHttpResponse('FetchSubscriptionsFailure.txt');
+        $this->setMockHttpResponse('ReportingFetchCanceledSubscriptionsFailure.txt');
         $response = $this->request->send();
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
-        $this->assertSame('Invalid Date Range', $response->getMessage());
+        $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
 }

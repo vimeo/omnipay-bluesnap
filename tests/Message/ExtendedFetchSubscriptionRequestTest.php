@@ -149,7 +149,7 @@ class ExtendedFetchSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         }
         $this->assertSame($cardLastFour, $card->getNumberLastFour());
         $this->assertSame($cardBrand, $card->getBrand());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -186,7 +186,7 @@ class ExtendedFetchSubscriptionRequestTest extends OmnipayBlueSnapTestCase
             'Etc/GMT+8',
             $responseNextChargeDate ? $responseNextChargeDate->getTimezone()->getName() : null
         );
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -236,7 +236,7 @@ class ExtendedFetchSubscriptionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'User API_1234567890123456789012 is not authorized to retrieve subscription ID '
                 . $this->subscriptionReference . '.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

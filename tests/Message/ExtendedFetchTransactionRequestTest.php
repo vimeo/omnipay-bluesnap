@@ -159,7 +159,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame($email, $card->getEmail());
         $this->assertSame($country, $card->getCountry());
         $this->assertSame($postcode, $card->getPostcode());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -195,7 +195,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
             'Etc/GMT+8',
             $responseDateCreated ? $responseDateCreated->getTimezone()->getName() : null
         );
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -212,7 +212,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame('400', $response->getCode());
         $this->assertSame(
             'Order retrieval service failure. Order ID: ' . $this->transactionReference . ' is not found.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
     }
 

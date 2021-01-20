@@ -53,6 +53,11 @@ use SimpleXMLElement;
 class HostedCheckoutDecryptReturnUrlRequest extends AbstractRequest
 {
     /**
+     * @var string
+     */
+    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\HostedCheckoutDecryptReturnUrlResponse';
+
+    /**
      * @return SimpleXMLElement
      * @psalm-suppress PossiblyInvalidArrayAccess because the existence of the key is checked first before using it.
      */
@@ -100,5 +105,18 @@ class HostedCheckoutDecryptReturnUrlRequest extends AbstractRequest
     public function getHttpMethod()
     {
         return Constants::HTTP_METHOD_POST;
+    }
+
+    /**
+     * Overriding to provide a more precise return type
+     *
+     * @return HostedCheckoutDecryptReturnUrlResponse
+     */
+    public function send()
+    {
+        /**
+         * @var HostedCheckoutDecryptReturnUrlResponse
+         */
+        return parent::send();
     }
 }

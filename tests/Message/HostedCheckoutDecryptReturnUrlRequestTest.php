@@ -137,7 +137,7 @@ class HostedCheckoutDecryptReturnUrlRequestTest extends OmnipayBlueSnapTestCase
             ),
             $response->getDecryptedParameters()
         );
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -154,7 +154,7 @@ class HostedCheckoutDecryptReturnUrlRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame(
             'Parameter Decryption service failed due to problematic input. We recommend checking'
                 . ' the parameter-encyption token input and try again or contact merchant support.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
         // @codingStandardsIgnoreEnd
     }

@@ -86,7 +86,7 @@ class ExtendedFetchCustomerRequestTest extends OmnipayBlueSnapTestCase
         $this->assertFalse($response->isRedirect());
         $this->assertSame('200', $response->getCode());
         $this->assertSame($this->customerReference, $response->getCustomerReference());
-        $this->assertNull($response->getMessage());
+        $this->assertNull($response->getErrorMessage());
     }
 
     /**
@@ -103,7 +103,7 @@ class ExtendedFetchCustomerRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame('403', $response->getCode());
         $this->assertSame(
             'User: API_1234567890123456789012 is not authorized to view shopper: ' . $this->customerReference . '.',
-            $response->getMessage()
+            $response->getErrorMessage()
         );
     }
 }

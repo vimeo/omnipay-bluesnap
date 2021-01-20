@@ -17,6 +17,11 @@ use Omnipay\Common\Exception\InvalidRequestException;
 abstract class ReportingAbstractRequest extends AbstractRequest
 {
     /**
+     * @var string
+     */
+    protected static $RESPONSE_CLASS = '\Omnipay\BlueSnap\Message\ReportingResponse';
+
+    /**
      * @return string
      */
     abstract public function getReportName();
@@ -29,6 +34,19 @@ abstract class ReportingAbstractRequest extends AbstractRequest
     public function getHttpMethod()
     {
         return Constants::HTTP_METHOD_GET;
+    }
+
+    /**
+     * Overriding to provide a more precise return type
+     *
+     * @return ReportingResponse
+     */
+    public function send()
+    {
+        /**
+         * @var ReportingResponse
+         */
+        return parent::send();
     }
 
     /**

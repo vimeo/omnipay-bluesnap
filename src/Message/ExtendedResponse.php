@@ -246,9 +246,6 @@ class ExtendedResponse extends AbstractResponse
      * Note that chargeback and refund statuses are not store here. To see if a transaction contains a refund or a
      * chargeback refer to the following:
      *
-     * @see Response::getChargebacks() or
-     * @see Response::getRefunds()
-     *
      * @return string|null
      * @psalm-suppress MixedPropertyFetch
      */
@@ -397,7 +394,8 @@ class ExtendedResponse extends AbstractResponse
             /**
              * @var SimpleXMLElement
              */
-            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'};
+            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}
+                ->{'invoice-contact-info'};
             if (isset($contactXml->{'first-name'})) {
                 $cardParams['firstName'] = (string) $contactXml->{'first-name'};
             }
@@ -432,14 +430,14 @@ class ExtendedResponse extends AbstractResponse
         if (!isset($this->transaction)) {
             $this->invoice = $this->getInvoice();
             if ($this->invoice !== null) {
-                $params = [
+                $params = array(
                     'amount' => $this->getAmount(),
                     'currency' => $this->getCurrency(),
                     'customerReference' => $this->getCustomerReference(),
                     'date' => $this->getDateCreated(),
                     'status' => $this->getStatus(), // Note chargebacks
                     'transactionReference' => $this->getTransactionReference(),
-                ];
+                );
                 $this->transaction = new Transaction($params);
             }
         }
