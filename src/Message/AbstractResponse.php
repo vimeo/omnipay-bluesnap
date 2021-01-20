@@ -113,7 +113,7 @@ abstract class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
     /**
      * Get the error message from the response. Returns null if request was successful.
      *
-     * A response error can is returned as XML if no application type is specified. We also need to account for JSON
+     * A response error can be returned as XML if no content-type header is set. We also need to account for JSON
      * error responses returned as strings.
      *
      * @return string|null
