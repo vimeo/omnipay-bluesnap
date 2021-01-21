@@ -528,7 +528,7 @@ class ExtendedResponse extends AbstractResponse
                  * @param string $transaction_reference
                  * @return bool
                  */
-                static function ($invoice, $transaction_reference) {
+                function ($invoice, $transaction_reference) {
                     return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
                         && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_CHARGEBACK
                         && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
@@ -540,7 +540,7 @@ class ExtendedResponse extends AbstractResponse
                  * @param string $transaction_reference
                  * @return bool
                  */
-                static function ($invoice, $transaction_reference) {
+                function ($invoice, $transaction_reference) {
                     return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
                         && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_REFUND
                         && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
@@ -552,7 +552,7 @@ class ExtendedResponse extends AbstractResponse
                  * @param string $transaction_reference
                  * @return bool
                  */
-                static function ($invoice, $transaction_reference) {
+                function ($invoice, $transaction_reference) {
                     return isset($invoice->{'invoice-id'})
                         && (string)$invoice->{'invoice-id'} === $transaction_reference;
                 };
