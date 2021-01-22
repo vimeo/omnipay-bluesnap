@@ -75,7 +75,7 @@ abstract class ReportingAbstractRequest extends AbstractRequest
         $startTime = $this->getStartTime();
         $endTime = $this->getEndTime();
         $transaction_type = $this->getTransactionType();
-        $params = [];
+        $params = array();
 
         $endpoint = parent::getEndpoint() . '/report/' . (string) static::REPORT_NAME;
 
