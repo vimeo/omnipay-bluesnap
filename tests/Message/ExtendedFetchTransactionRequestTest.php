@@ -2,9 +2,10 @@
 
 namespace Omnipay\BlueSnap\Message;
 
-use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
-use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use DateTime;
+use Omnipay\BlueSnap\Constants;
+use Omnipay\BlueSnap\Test\Framework\DataFaker;
+use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 
 class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
 {
@@ -245,5 +246,45 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame($customer_reference, $transaction->getCustomerReference());
         $this->assertSame($date_created, $transaction->getDate()->format('d-M-y'));
         $this->assertSame($this->transactionReference, $transaction->getTransactionReference());
+    }
+
+    /**
+     * @return void
+     * @psalm-suppress PossiblyNullArrayAccess
+     */
+    public function testGetRefunds()
+    {
+        $currency = $this->faker->currency();
+        $amount = $this->faker->monetaryAmount($currency);
+        $customer_reference = $this->faker->customerReference();
+        $date_created = $this->faker->timestamp();
+        $reversal_reference = $this->faker->transactionReference();
+        $reversal_date = $this->faker->timestamp();
+
+        $this->setMockHttpResponse('ExtendedFetchTransactionWithReversalSuccess.txt', array(
+            'AMOUNT' => $amount,
+            'CHARGE_DATE' => $date_created,
+            'CURRENCY' => $currency,
+            'CUSTOMER_REFERENCE' => $customer_reference,
+            'REVERSAL_REFERENCE' => $reversal_reference,
+            'REVERSAL_AMOUNT' => $amount,
+            'REVERSAL_DATE' => $reversal_date,
+            'REVERSAL_TYPE' => Constants::REVERSAL_REFUND,
+            'TRANSACTION_REFERENCE' => $this->transactionReference,
+        ));
+
+        $response = $this->request->send();
+
+        $refunds = $response->getRefunds();
+        $this->assertNotNull($refunds);
+        $this->assertCount(1, $refunds);
+
+        /** @var Refund $refund */
+        $refund = $refunds[0];
+        $this->assertSame($amount, $refund->getAmount());
+        $this->assertSame($currency, $refund->getCurrency());
+        $this->assertSame($reversal_reference, $refund->getRefundReference());
+        $this->assertSame($reversal_date, $refund->getTime());
+        $this->assertSame($this->transactionReference, $refund->getTransactionReference());
     }
 }

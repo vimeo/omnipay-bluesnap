@@ -31,6 +31,11 @@ class ExtendedResponse extends AbstractResponse
     protected $transaction;
 
     /**
+     * @var array<Refund>|null
+     */
+    protected $refunds;
+
+    /**
      * @var SimpleXMLElement|null
      */
     private $invoice;
@@ -443,6 +448,32 @@ class ExtendedResponse extends AbstractResponse
         }
 
         return $this->transaction;
+    }
+
+    /**
+     * Returns refunds for the corresponding transaction that was fetched
+     *
+     * @return Refund[]|null
+     */
+    public function getRefunds()
+    {
+        if (empty($this->refunds)) {
+            $invoice = $this->getInvoice(Constants::REVERSAL_REFUND);
+            if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+                /** @var SimpleXMLElement */
+                $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
+                $params = array(
+                    'amount' => (string) $financial_transaction->amount,
+                    'currency' => (string) $financial_transaction->currency,
+                    'refundReference' => (string) $invoice->{'invoice-id'},
+                    'time' => (string) $financial_transaction->{'date-created'},
+                    'transactionReference' => (string) $invoice->{'original-invoice-id'},
+                );
+                $this->refunds[] = new Refund($params);
+            }
+        }
+
+        return $this->refunds;
     }
 
     /**
