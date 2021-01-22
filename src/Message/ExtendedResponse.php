@@ -36,6 +36,12 @@ class ExtendedResponse extends AbstractResponse
     protected $refunds;
 
     /**
+     * @var array<Chargeback>|null
+     */
+    protected $chargebacks;
+
+
+    /**
      * @var SimpleXMLElement|null
      */
     private $invoice;
@@ -474,6 +480,33 @@ class ExtendedResponse extends AbstractResponse
         }
 
         return $this->refunds;
+    }
+
+    /**
+     * Returns chargeback for the corresponding transaction that was fetched
+     *
+     * @return Chargeback[]|null
+     */
+    public function getChargebacks()
+    {
+        if (empty($this->chargebacks)) {
+            $invoice = $this->getInvoice(Constants::REVERSAL_CHARGEBACK);
+            if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+                /** @var SimpleXMLElement */
+                $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
+                $params = array(
+                    'amount' => (string) $financial_transaction->amount,
+                    'currency' => (string) $financial_transaction->currency,
+                    'chargebackReference' => (string) $invoice->{'invoice-id'},
+                    'processorReceivedTime' => (string) $financial_transaction->{'date-created'},
+                    'status' => Constants::REVERSAL_CHARGEBACK,
+                    'transactionReference' => (string) $invoice->{'original-invoice-id'},
+                );
+                $this->chargebacks[] = new Chargeback($params);
+            }
+        }
+
+        return $this->chargebacks;
     }
 
     /**
