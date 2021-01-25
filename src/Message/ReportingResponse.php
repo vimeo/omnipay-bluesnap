@@ -17,6 +17,11 @@ use Omnipay\BlueSnap\Transaction;
 class ReportingResponse extends AbstractResponse
 {
     /**
+     * @var Refund[]|null
+     */
+    protected $refunds;
+
+    /**
      * Retrieves multiple transactions data from the response.
      *
      * This data can only be retrieved if the request was issued via @link ReportingFetchTransactionsRequest which
@@ -83,5 +88,45 @@ class ReportingResponse extends AbstractResponse
             }
         }
         return $subscriptions;
+    }
+
+    /**
+     * @return Refund[]|null
+     * @throws Exception
+     */
+    public function getRefunds()
+    {
+        if (!empty($this->refunds)) {
+            return $this->refunds;
+        }
+
+        if (!is_array($this->data) || !isset($this->data['data'])) {
+            return null;
+        }
+
+         /** @var array<string, string> $row */
+        foreach ($this->data['data'] as $row) {
+            /**
+             * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_REFUND) was used
+             * then these should always be of type 'Refund'. This check is just added as extra layer of safety to
+             * ensure only refunded transactions are included because excluding a transaction type will return back
+             * all types.
+             */
+            if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_REFUND) {
+                continue;
+            }
+            $params = array(
+                'amount' => $row['Merchant Sales (Auth Currency)'],
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'time' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'reason' => $row['Refund / Chargeback Reason'],
+                'refundReference' => $row['Invoice ID'],
+                'transactionReference' => $row['Original Invoice ID'],
+            );
+
+            $this->refunds[] = new Refund($params);
+        }
+        return $this->refunds;
     }
 }

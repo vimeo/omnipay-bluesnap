@@ -223,4 +223,50 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame('400', $response->getCode());
         $this->assertSame('Invalid Date Range', $response->getErrorMessage());
     }
+
+    /**
+     * @psalm-suppress PossiblyNullArrayAccess
+     * @return void
+     */
+    public function testSendSuccessForRefunds()
+    {
+        $this->request->setStartTime($this->startTime);
+        $this->request->setEndTime($this->endTime);
+        $this->request->setTransactionType(Constants::TRANSACTION_TYPE_REFUND);
+
+        $currency = $this->faker->currency();
+        $sale_transaction_reference = $this->faker->transactionReference();
+        $refund_transaction_reference = $this->faker->transactionReference();
+        $refund_date = $this->faker->datetime();
+        $sale_date = $this->faker->datetime();
+
+        $this->setMockHttpResponse('ReportingFetchTransactionsWithReversalSuccess.txt', array(
+            'SALE_TRANSACTION_REFERENCE' => $sale_transaction_reference,
+            'REVERSAL_TRANSACTION_REFERENCE' => $refund_transaction_reference,
+            'SALE_DATE' => $sale_date->format('m/d/Y'),
+            'REVERSAL_DATE' => $refund_date->format('m/d/Y'),
+            'REVERSAL_TYPE' => Constants::TRANSACTION_TYPE_REFUND,
+            'CURRENCY' => $currency,
+            'AMOUNT' => $this->faker->monetaryAmount($currency),
+            'CUSTOMER_REFERENCE' => $this->faker->customerReference(),
+            'CUSTOM_0_0' => $this->faker->customParameter(),
+            'CUSTOM_1_0' => $this->faker->customParameter()
+
+        ));
+
+        $response = $this->request->send();
+        $this->assertCount(2, $response->getTransactions());
+        $refunds = $response->getRefunds();
+        $this->assertCount(1, $refunds);
+
+        /** @var Refund $refund */
+        $refund = $refunds[0];
+        $this->assertInstanceOf(Refund::class, $refund);
+        $this->assertSame($sale_transaction_reference, $refund->getTransactionReference());
+        $this->assertSame($refund_transaction_reference, $refund->getRefundReference());
+
+        /** @var DateTime $actual_date */
+        $actual_date =  $refund->getTime();
+        $this->assertSame($refund_date->format('m/d/Y'), $actual_date->format('m/d/Y'));
+    }
 }

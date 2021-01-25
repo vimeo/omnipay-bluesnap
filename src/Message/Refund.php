@@ -3,6 +3,7 @@
 
 namespace Omnipay\BlueSnap\Message;
 
+use DateTime;
 use Omnipay\BlueSnap\Transaction;
 use Omnipay\Common\Helper;
 use Omnipay\Common\ItemBag;
@@ -251,7 +252,7 @@ class Refund
     /**
      * Get the time
      *
-     * @return null|string
+     * @return DateTime|null
      */
     public function getTime()
     {
@@ -261,7 +262,7 @@ class Refund
     /**
      * Set the time
      *
-     * @param string $value
+     * @param DateTime|null $value
      * @return static
      */
     public function setTime($value)
