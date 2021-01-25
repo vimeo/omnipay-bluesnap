@@ -5,6 +5,7 @@ namespace Omnipay\BlueSnap\Message;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Omnipay\BlueSnap\Chargeback;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Gateway;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
@@ -256,6 +257,7 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 
         $response = $this->request->send();
         $this->assertCount(2, $response->getTransactions());
+        $this->assertEmpty($response->getChargebacks());
         $refunds = $response->getRefunds();
         $this->assertCount(1, $refunds);
 
@@ -268,5 +270,52 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         /** @var DateTime $actual_date */
         $actual_date =  $refund->getTime();
         $this->assertSame($refund_date->format('m/d/Y'), $actual_date->format('m/d/Y'));
+    }
+
+    /**
+     * @psalm-suppress PossiblyNullArrayAccess
+     * @return void
+     */
+    public function testSendSuccessForChargebacks()
+    {
+        $this->request->setStartTime($this->startTime);
+        $this->request->setEndTime($this->endTime);
+        $this->request->setTransactionType(Constants::TRANSACTION_TYPE_CHARGEBACK);
+
+        $currency = $this->faker->currency();
+        $sale_transaction_reference = $this->faker->transactionReference();
+        $refund_transaction_reference = $this->faker->transactionReference();
+        $chargeback_date = $this->faker->datetime();
+        $sale_date = $this->faker->datetime();
+
+        $this->setMockHttpResponse('ReportingFetchTransactionsWithReversalSuccess.txt', array(
+            'SALE_TRANSACTION_REFERENCE' => $sale_transaction_reference,
+            'REVERSAL_TRANSACTION_REFERENCE' => $refund_transaction_reference,
+            'SALE_DATE' => $sale_date->format('m/d/Y'),
+            'REVERSAL_DATE' => $chargeback_date->format('m/d/Y'),
+            'REVERSAL_TYPE' => Constants::TRANSACTION_TYPE_CHARGEBACK,
+            'CURRENCY' => $currency,
+            'AMOUNT' => $this->faker->monetaryAmount($currency),
+            'CUSTOMER_REFERENCE' => $this->faker->customerReference(),
+            'CUSTOM_0_0' => $this->faker->customParameter(),
+            'CUSTOM_1_0' => $this->faker->customParameter()
+
+        ));
+
+        $response = $this->request->send();
+        $this->assertCount(2, $response->getTransactions());
+        $this->assertEmpty($response->getRefunds());
+        $chargebacks = $response->getChargebacks();
+        $this->assertCount(1, $chargebacks);
+
+        /** @var Chargeback $chargeback */
+        $chargeback = $chargebacks[0];
+        $this->assertInstanceOf(Chargeback::class, $chargeback);
+        $this->assertSame($sale_transaction_reference, $chargeback->getTransactionReference());
+        $this->assertSame($refund_transaction_reference, $chargeback->getChargebackReference());
+
+        /** @var DateTime $actual_date */
+        $actual_date =  $chargeback->getProcessorReceivedTime();
+        $this->assertSame($chargeback_date->format('m/d/Y'), $actual_date->format('m/d/Y'));
     }
 }

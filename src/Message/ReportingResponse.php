@@ -5,6 +5,7 @@ namespace Omnipay\BlueSnap\Message;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Omnipay\BlueSnap\Chargeback;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\Transaction;
@@ -20,6 +21,11 @@ class ReportingResponse extends AbstractResponse
      * @var Refund[]|null
      */
     protected $refunds;
+
+    /**
+     * @var Chargeback[]|null
+     */
+    protected $chargebacks;
 
     /**
      * Retrieves multiple transactions data from the response.
@@ -128,5 +134,45 @@ class ReportingResponse extends AbstractResponse
             $this->refunds[] = new Refund($params);
         }
         return $this->refunds;
+    }
+
+    /**
+     * @return Chargeback[]|null
+     * @throws Exception
+     */
+    public function getChargebacks()
+    {
+        if (!empty($this->chargebacks)) {
+            return $this->chargebacks;
+        }
+
+        if (!is_array($this->data) || !isset($this->data['data'])) {
+            return null;
+        }
+
+         /** @var array<string, string> $row */
+        foreach ($this->data['data'] as $row) {
+            /**
+             * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_CHARGEBACK) was
+             * used then these should always be of type 'Refund'. This check is just added as extra layer of safety to
+             * ensure only refunded transactions are included because excluding a transaction type will return back
+             * all types.
+             */
+            if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_CHARGEBACK) {
+                continue;
+            }
+
+            $params = array(
+                'amount' => $row['Merchant Sales (Auth Currency)'],
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'processorReceivedTime' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'reason' => $row['Refund / Chargeback Reason'],
+                'chargebackReference' => $row['Invoice ID'],
+                'transactionReference' => $row['Original Invoice ID'],
+            );
+            $this->chargebacks[] = new Chargeback($params);
+        }
+        return $this->chargebacks;
     }
 }
