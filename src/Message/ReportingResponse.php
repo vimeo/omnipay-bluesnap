@@ -166,7 +166,10 @@ class ReportingResponse extends AbstractResponse
                 'amount' => $row['Merchant Sales (Auth Currency)'],
                 'currency' => $row['Auth. Currency'],
                 'customerReference' => $row['Shopper ID'],
-                'processorReceivedTime' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'processorReceivedTime' => new DateTime(
+                    $row['Transaction Date'],
+                    new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)
+                ),
                 'reason' => $row['Refund / Chargeback Reason'],
                 'chargebackReference' => $row['Invoice ID'],
                 'transactionReference' => $row['Original Invoice ID'],
