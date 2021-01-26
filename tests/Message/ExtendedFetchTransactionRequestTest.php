@@ -303,7 +303,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
         $reversal_reference = $this->faker->transactionReference();
         $reversal_date = $this->faker->timestamp();
 
-        $this->setMockHttpResponse('ExtendedFetchTransactionWithReversalSuccess.txt', [
+        $this->setMockHttpResponse('ExtendedFetchTransactionWithReversalSuccess.txt', array(
             'AMOUNT' => $amount,
             'CHARGE_DATE' => $date_created,
             'CURRENCY' => $currency,
@@ -313,7 +313,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
             'REVERSAL_DATE' => $reversal_date,
             'REVERSAL_TYPE' => Constants::REVERSAL_CHARGEBACK,
             'TRANSACTION_REFERENCE' => $this->transactionReference,
-        ]);
+        ));
 
         $response = $this->request->send();
 
