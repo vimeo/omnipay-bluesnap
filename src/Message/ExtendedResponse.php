@@ -585,28 +585,16 @@ class ExtendedResponse extends AbstractResponse
     private function getInvoiceFilterForEventType($reversal_type = null)
     {
         $fn = null;
-        if ($reversal_type === Constants::REVERSAL_CHARGEBACK) {
+    if ($reversal_type !== null) {
             $fn =
                 /**
                  * @param SimpleXMLElement $invoice
                  * @param string $transaction_reference
                  * @return bool
                  */
-                function ($invoice, $transaction_reference) {
+                function ($invoice, $transaction_reference) use ($reversal_type) {
                     return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
-                        && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_CHARGEBACK
-                        && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
-                };
-        } elseif ($reversal_type === Constants::REVERSAL_REFUND) {
-            $fn =
-                /**
-                 * @param SimpleXMLElement $invoice
-                 * @param string $transaction_reference
-                 * @return bool
-                 */
-                function ($invoice, $transaction_reference) {
-                    return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
-                        && (string)$invoice->{'reversal-type'} === Constants::REVERSAL_REFUND
+                        && (string)$invoice->{'reversal-type'} === $reversal_type
                         && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
                 };
         } else {
