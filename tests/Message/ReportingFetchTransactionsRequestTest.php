@@ -263,7 +263,7 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 
         /** @var Refund $refund */
         $refund = $refunds[0];
-        $this->assertInstanceOf(Refund::class, $refund);
+        $this->assertInstanceOf('\Omnipay\BlueSnap\Message\Refund', $refund);
         $this->assertSame($sale_transaction_reference, $refund->getTransactionReference());
         $this->assertSame($refund_transaction_reference, $refund->getRefundReference());
 
