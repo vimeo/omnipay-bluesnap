@@ -114,9 +114,9 @@ class ReportingResponse extends AbstractResponse
         foreach ($this->data['data'] as $row) {
             /**
              * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_REFUND) was used
-             * then these should always be of type 'Refund'. This check is just added as extra layer of safety to
-             * ensure only refunded transactions are included because excluding a transaction type will return back
-             * all types.
+             * then these should always be of type 'Refund'. This check is added as extra layer of safety to
+             * ensure only transactions with chargebacks are included. If no transaction type is used in the request,
+             * all transaction types (sales, refunds and chargebacks) will returned.
              */
             if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_REFUND) {
                 continue;
@@ -154,9 +154,9 @@ class ReportingResponse extends AbstractResponse
         foreach ($this->data['data'] as $row) {
             /**
              * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_CHARGEBACK) was
-             * used then these should always be of type 'Refund'. This check is just added as extra layer of safety to
-             * ensure only refunded transactions are included because excluding a transaction type will return back
-             * all types.
+             * used then these should always be of type 'Chargeback'. This check is added as extra layer of safety to
+             * ensure only refunded transactions are included. If no transaction type is used in the request all
+             * transaction types (sales, refunds and chargebacks) will returned,
              */
             if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_CHARGEBACK) {
                 continue;
