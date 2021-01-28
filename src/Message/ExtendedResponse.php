@@ -585,7 +585,7 @@ class ExtendedResponse extends AbstractResponse
     private function getInvoiceFilterForEventType($reversal_type = null)
     {
         $fn = null;
-    if ($reversal_type !== null) {
+        if ($reversal_type !== null) {
             $fn =
                 /**
                  * @param SimpleXMLElement $invoice
