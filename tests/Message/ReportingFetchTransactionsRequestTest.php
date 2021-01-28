@@ -310,7 +310,7 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
 
         /** @var Chargeback $chargeback */
         $chargeback = $chargebacks[0];
-        $this->assertInstanceOf(Chargeback::class, $chargeback);
+        $this->assertInstanceOf('\Omnipay\BlueSnap\Chargeback', $chargeback);
         $this->assertSame($sale_transaction_reference, $chargeback->getTransactionReference());
         $this->assertSame($refund_transaction_reference, $chargeback->getChargebackReference());
 
