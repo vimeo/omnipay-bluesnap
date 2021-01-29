@@ -7,6 +7,7 @@ namespace Omnipay\BlueSnap\Message;
 use Closure;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use Omnipay\BlueSnap\Chargeback;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\CreditCard;
@@ -40,11 +41,20 @@ class ExtendedResponse extends AbstractResponse
      */
     protected $chargebacks;
 
+    /**
+     * @var null|SimpleXMLElement
+     */
+    protected $transaction_invoice;
 
     /**
-     * @var SimpleXMLElement|null
+     * @var SimpleXMLElement[]
      */
-    private $invoice;
+    protected $chargeback_invoices;
+
+    /**
+     * @var SimpleXMLElement[]
+     */
+    protected $refund_invoices;
 
     /**
      * @param RequestInterface $request the initiating request.
@@ -87,9 +97,9 @@ class ExtendedResponse extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
-            return (string) $this->invoice->{'invoice-id'};
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+            return (string) $invoice->{'invoice-id'};
         }
         if ($this->data instanceof SimpleXMLElement
             && isset($this->data->{'charge-invoice-info'}->{'invoice-id'})) {
@@ -125,10 +135,11 @@ class ExtendedResponse extends AbstractResponse
             return null;
         }
 
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
-            return (string) $this->invoice->{'financial-transactions'}->{'financial-transaction'}->amount;
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+            return (string) $invoice->{'financial-transactions'}->{'financial-transaction'}->amount;
         }
+
         // if an override charge is set, that's the current amount, not the catalog (original) one
         if (isset($this->data->{'override-recurring-charge'}->amount)) {
             return (string) $this->data->{'override-recurring-charge'}->amount;
@@ -171,10 +182,14 @@ class ExtendedResponse extends AbstractResponse
         if (!$this->data instanceof SimpleXMLElement) {
             return null;
         }
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
-            return (string) $this->invoice->{'financial-transactions'}->{'financial-transaction'}->currency;
+
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+            return (string) $invoice->{'financial-transactions'}
+                ->{'financial-transaction'}
+                ->currency;
         }
+
         // if an override charge is set, that's the current currency, not the catalog (original) one
         if (isset($this->data->{'override-recurring-charge'}->currency)) {
             return (string) $this->data->{'override-recurring-charge'}->currency;
@@ -194,6 +209,7 @@ class ExtendedResponse extends AbstractResponse
      * The empty array will be returned if there are no charges.
      *
      * @return array<SubscriptionCharge>|null
+     * @throws Exception
      * @psalm-suppress MixedPropertyFetch
      * @psalm-suppress MixedAssignment
      */
@@ -266,10 +282,13 @@ class ExtendedResponse extends AbstractResponse
             return null;
         }
         // Check if we have invoice and invoice status
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
-            return (string)$this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'status'};
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+            return (string)$invoice->{'financial-transactions'}
+                ->{'financial-transaction'}
+                ->{'status'};
         }
+
         // check if status element is set and return
         if (isset($this->data->{'status'})) {
             return (string) $this->data->{'status'};
@@ -289,9 +308,9 @@ class ExtendedResponse extends AbstractResponse
             return null;
         }
         // Check if we have invoice and invoice plan reference (Bluesnap contract)
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
-            return (string) $this->invoice->{'financial-transactions'}
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+            return (string) $invoice->{'financial-transactions'}
                 ->{'financial-transaction'}
                 ->{'skus'}
                 ->{'sku'}
@@ -310,6 +329,7 @@ class ExtendedResponse extends AbstractResponse
      * The DateTime returned will be in the Etc/GMT+8 time zone.
      *
      * @return DateTime|null
+     * @throws Exception
      * @psalm-suppress MixedPropertyFetch
      */
     public function getDateCreated()
@@ -318,10 +338,13 @@ class ExtendedResponse extends AbstractResponse
             return null;
         }
 
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement && isset($this->invoice->{'invoice-id'})) {
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement
+            && isset($invoice->{'invoice-id'})) {
             return new DateTime(
-                $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'date-created'},
+                $invoice->{'financial-transactions'}
+                    ->{'financial-transaction'}
+                    ->{'date-created'},
                 new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)
             );
         }
@@ -346,6 +369,7 @@ class ExtendedResponse extends AbstractResponse
      * The DateTime returned will be in the Etc/GMT+8 time zone.
      *
      * @return DateTime|null
+     * @throws Exception
      * @psalm-suppress MixedPropertyFetch
      */
     public function getNextChargeDate()
@@ -369,14 +393,17 @@ class ExtendedResponse extends AbstractResponse
         $cardParams = array();
 
         $cardXml = null;
-        $this->invoice = $this->getInvoice();
-        if ($this->invoice instanceof SimpleXMLElement
-            && isset($this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'})
+
+        $invoice = $this->getTransactionInvoice();
+        if ($invoice instanceof SimpleXMLElement
+            && isset($invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'})
         ) {
             /**
              * @var SimpleXMLElement
              */
-            $cardXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'credit-card'};
+            $cardXml = $invoice->{'financial-transactions'}
+                ->{'financial-transaction'}
+                ->{'credit-card'};
         } elseif ($this->data instanceof SimpleXMLElement && isset($this->data->{'credit-card'})) {
             /**
              * @var SimpleXMLElement
@@ -399,13 +426,15 @@ class ExtendedResponse extends AbstractResponse
             }
         }
 
-        if ($this->invoice instanceof SimpleXMLElement
-            && isset($this->invoice->{'financial-transactions'}->{'financial-transaction'}->{'invoice-contact-info'})
+        if ($invoice instanceof SimpleXMLElement && isset($invoice->{'financial-transactions'}
+                ->{'financial-transaction'}
+                ->{'invoice-contact-info'})
         ) {
             /**
              * @var SimpleXMLElement
              */
-            $contactXml = $this->invoice->{'financial-transactions'}->{'financial-transaction'}
+            $contactXml = $invoice->{'financial-transactions'}
+                ->{'financial-transaction'}
                 ->{'invoice-contact-info'};
             if (isset($contactXml->{'first-name'})) {
                 $cardParams['firstName'] = (string) $contactXml->{'first-name'};
@@ -435,12 +464,13 @@ class ExtendedResponse extends AbstractResponse
 
     /**
      * @return Transaction|null
+     * @throws Exception
      */
     public function getTransaction()
     {
         if (!isset($this->transaction)) {
-            $this->invoice = $this->getInvoice();
-            if ($this->invoice !== null) {
+            $invoice = $this->getTransactionInvoice();
+            if ($invoice !== null) {
                 $params = array(
                     'amount' => $this->getAmount(),
                     'currency' => $this->getCurrency(),
@@ -464,18 +494,20 @@ class ExtendedResponse extends AbstractResponse
     public function getRefunds()
     {
         if (empty($this->refunds)) {
-            $invoice = $this->getInvoice(Constants::REVERSAL_REFUND);
-            if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-                /** @var SimpleXMLElement */
-                $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
-                $params = array(
-                    'amount' => (string) $financial_transaction->amount,
-                    'currency' => (string) $financial_transaction->currency,
-                    'refundReference' => (string) $invoice->{'invoice-id'},
-                    'time' => (string) $financial_transaction->{'date-created'},
-                    'transactionReference' => (string) $invoice->{'original-invoice-id'},
-                );
-                $this->refunds[] = new Refund($params);
+            $invoices = $this->getRefundInvoices();
+            foreach ($invoices as $invoice) {
+                if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+                    /** @var SimpleXMLElement */
+                    $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
+                    $params = array(
+                        'amount' => (string) $financial_transaction->amount,
+                        'currency' => (string) $financial_transaction->currency,
+                        'refundReference' => (string) $invoice->{'invoice-id'},
+                        'time' => (string) $financial_transaction->{'date-created'},
+                        'transactionReference' => (string) $invoice->{'original-invoice-id'},
+                    );
+                    $this->refunds[] = new Refund($params);
+                }
             }
         }
 
@@ -490,19 +522,21 @@ class ExtendedResponse extends AbstractResponse
     public function getChargebacks()
     {
         if (empty($this->chargebacks)) {
-            $invoice = $this->getInvoice(Constants::REVERSAL_CHARGEBACK);
-            if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
-                /** @var SimpleXMLElement */
-                $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
-                $params = array(
-                    'amount' => (string) $financial_transaction->amount,
-                    'currency' => (string) $financial_transaction->currency,
-                    'chargebackReference' => (string) $invoice->{'invoice-id'},
-                    'processorReceivedTime' => (string) $financial_transaction->{'date-created'},
-                    'status' => Constants::REVERSAL_CHARGEBACK,
-                    'transactionReference' => (string) $invoice->{'original-invoice-id'},
-                );
-                $this->chargebacks[] = new Chargeback($params);
+            $invoices = $this->getChargebackInvoices();
+            foreach ($invoices as $invoice) {
+                if ($invoice instanceof SimpleXMLElement && isset($invoice->{'invoice-id'})) {
+                    /** @var SimpleXMLElement */
+                    $financial_transaction = $invoice->{'financial-transactions'}->{'financial-transaction'};
+                    $params = array(
+                        'amount' => (string) $financial_transaction->amount,
+                        'currency' => (string) $financial_transaction->currency,
+                        'chargebackReference' => (string) $invoice->{'invoice-id'},
+                        'processorReceivedTime' => (string) $financial_transaction->{'date-created'},
+                        'status' => Constants::REVERSAL_CHARGEBACK,
+                        'transactionReference' => (string) $invoice->{'original-invoice-id'},
+                    );
+                    $this->chargebacks[] = new Chargeback($params);
+                }
             }
         }
 
@@ -539,43 +573,78 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
+     * Returns a single invoice object matching the request's transaction reference.
+     *
+     * @return SimpleXMLElement|null
+     */
+    protected function getTransactionInvoice()
+    {
+        if ($this->transaction_invoice !== null) {
+            return $this->transaction_invoice;
+        }
+
+        $extract_invoice_func = $this->getInvoiceFilterForEventType();
+
+        /** @var SimpleXMLElement|null */
+        $this->transaction_invoice = $extract_invoice_func();
+        return $this->transaction_invoice;
+    }
+
+    /**
+     * @return SimpleXMLElement[]
+     */
+    public function getRefundInvoices()
+    {
+        if ($this->refund_invoices !== null) {
+            return $this->refund_invoices;
+        }
+
+        $extract_invoice_func = $this->getInvoiceFilterForEventType(Constants::REVERSAL_REFUND);
+
+        /** @var SimpleXMLElement[] */
+        $this->refund_invoices = $extract_invoice_func();
+        return $this->refund_invoices;
+    }
+
+    /**
+     * @return SimpleXMLElement[]
+     */
+    public function getChargebackInvoices()
+    {
+        if ($this->chargeback_invoices !== null) {
+            return $this->chargeback_invoices;
+        }
+
+        $extract_invoice_func = $this->getInvoiceFilterForEventType(Constants::REVERSAL_CHARGEBACK);
+
+        /** @var SimpleXMLElement[] */
+        $this->chargeback_invoices = $extract_invoice_func();
+        return $this->chargeback_invoices;
+    }
+
+    /**
      * Returns the invoice element corresponding to the requested transaction
      *
      * When you fetch an order, it may contain multiple invoices (for example, one for each subscription charge), so
      * this function selects the correct one.
      *
      * Invoices can also contain incidents (refunds, chargebacks) in the response. BlueSnap refers to these as reversal
-     * types. This is currently the only known way of retrieving refunds/chargebacks from a transaction response.
+     * types. This is currently the only known way of retrieving refunds/chargebacks from a transaction response. Note
+     * that refunds can contain multiple invoices if the transaction was refunded in parts. Because of this, we need to
+     * be able to extract all refund invoices.
      *
-     * @param string|null $event_type
      * @return SimpleXMLElement|null
      */
-    protected function getInvoice($event_type = null)
+    protected function getInvoices()
     {
-        if ($this->invoice !== null) {
-            return $this->invoice;
-        }
-
-        $invoice_match = null;
-
-        // find the invoice that was requested
-        $request = $this->getRequest();
-        $transaction_reference = $request->getTransactionReference();
+        $invoices = null;
 
         if ($this->data instanceof SimpleXMLElement && isset($this->data->{'post-sale-info'}->invoices)) {
-            /** @var SimpleXMLElement */
+            /** @var SimpleXMLElement $invoices */
             $invoices = $this->data->{'post-sale-info'}->invoices;
-            $filter = $this->getInvoiceFilterForEventType($event_type);
-
-            /** @var SimpleXMLElement */
-            foreach ($invoices->children() as $invoice) {
-                if ($filter($invoice, $transaction_reference)) {
-                    $invoice_match = $invoice;
-                    break;
-                }
-            }
         }
-        return $invoice_match;
+
+        return $invoices;
     }
 
     /**
@@ -584,29 +653,54 @@ class ExtendedResponse extends AbstractResponse
      */
     private function getInvoiceFilterForEventType($reversal_type = null)
     {
+        $request = $this->getRequest();
+        $transaction_reference = $request->getTransactionReference();
+
         $fn = null;
         if ($reversal_type !== null) {
             $fn =
                 /**
-                 * @param SimpleXMLElement $invoice
-                 * @param string $transaction_reference
-                 * @return bool
+                 * @return SimpleXMLElement[]
                  */
-                function ($invoice, $transaction_reference) use ($reversal_type) {
-                    return isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
-                        && (string)$invoice->{'reversal-type'} === $reversal_type
-                        && (string)$invoice->{'original-invoice-id'} === $transaction_reference;
+                function () use ($reversal_type, $transaction_reference) {
+                    $invoices = $this->getInvoices();
+                    if ($invoices === null) {
+                        return array();
+                    }
+
+                    $reversal_invoices = array();
+                    /** @var SimpleXMLElement */
+                    foreach ($invoices->children() as $invoice) {
+                        if (isset($invoice->{'reversal-type'}, $invoice->{'original-invoice-id'})
+                            && (string)$invoice->{'reversal-type'} === $reversal_type
+                            && (string)$invoice->{'original-invoice-id'} === $transaction_reference) {
+                            $reversal_invoices[] = $invoice;
+                        }
+                    }
+                    return $reversal_invoices;
                 };
         } else {
             $fn =
                 /**
-                 * @param SimpleXMLElement $invoice
-                 * @param string $transaction_reference
-                 * @return bool
+                 * @return SimpleXMLElement|null
                  */
-                function ($invoice, $transaction_reference) {
-                    return isset($invoice->{'invoice-id'})
-                        && (string)$invoice->{'invoice-id'} === $transaction_reference;
+                function () use ($transaction_reference) {
+                    $invoices = $this->getInvoices();
+                    if ($invoices === null) {
+                        return null;
+                    }
+
+                    $invoice_match = null;
+                    /** @var SimpleXMLElement */
+                    foreach ($invoices->children() as $invoice) {
+                        if (isset($invoice->{'invoice-id'})
+                            && (string) $invoice->{'invoice-id'} === $transaction_reference) {
+                            $invoice_match = $invoice;
+                            break;
+                        }
+                    }
+
+                    return $invoice_match;
                 };
         }
 
