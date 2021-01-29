@@ -591,6 +591,8 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
+     * Returns all refund invoices that match the request's transaction reference.
+     *
      * @return SimpleXMLElement[]
      */
     public function getRefundInvoices()
@@ -607,6 +609,8 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
+     * Returns all chargeback invoices that match the request's transaction reference.
+     *
      * @return SimpleXMLElement[]
      */
     public function getChargebackInvoices()
