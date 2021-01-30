@@ -573,7 +573,7 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
-     * Returns a single invoice object matching the request's transaction reference.
+     * Returns the invoice element corresponding to the requested transaction.
      *
      * @return SimpleXMLElement|null
      */
@@ -591,7 +591,7 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
-     * Returns all refund invoices that match the request's transaction reference.
+     * Returns all refund invoice elements that match the request's transaction reference.
      *
      * @return SimpleXMLElement[]
      */
@@ -609,7 +609,7 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
-     * Returns all chargeback invoices that match the request's transaction reference.
+     * Returns all chargeback invoice elements that match the request's transaction reference.
      *
      * @return SimpleXMLElement[]
      */
@@ -627,15 +627,9 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
-     * Returns the invoice element corresponding to the requested transaction
+     * Returns all of the invoices contained in the response data.
      *
-     * When you fetch an order, it may contain multiple invoices (for example, one for each subscription charge), so
-     * this function selects the correct one.
-     *
-     * Invoices can also contain incidents (refunds, chargebacks) in the response. BlueSnap refers to these as reversal
-     * types. This is currently the only known way of retrieving refunds/chargebacks from a transaction response. Note
-     * that refunds can contain multiple invoices if the transaction was refunded in parts. Because of this, we need to
-     * be able to extract all refund invoices.
+     * When you fetch an order, it may contain multiple invoices (for example, one for each subscription charge).
      *
      * @return SimpleXMLElement|null
      */
@@ -652,13 +646,26 @@ class ExtendedResponse extends AbstractResponse
     }
 
     /**
+     * Returns a closure that is specific to an event type that retrieves all invoices associated with that event.
+     *
+     * When retrieving a single charge, the closure will return on the first transaction reference match it finds.
+     *
+     * A response can also contain incidents (refunds, chargebacks) in the response. BlueSnap refers to these as
+     * reversal types. This is currently the only known way of retrieving refunds/chargebacks from an order response
+     * in the Extended API. Refunds can contain multiple invoices if the transaction was refunded in parts. Because of
+     * this, we need to extract all invoices containing reversals. Although currently unable to verify if chargebacks
+     * follow the same behavior, there is currently no min or max bounds for the in documents for either reversal.
+     * Because of this, we assume that a response can also contain multiple chargeback invoices.
+     *
      * @param string|null $reversal_type
+     *
      * @return Closure
      */
     private function getInvoiceFilterForEventType($reversal_type = null)
     {
         $request = $this->getRequest();
         $transaction_reference = $request->getTransactionReference();
+        $invoices = $this->getInvoices();
 
         $fn = null;
         if ($reversal_type !== null) {
@@ -666,8 +673,7 @@ class ExtendedResponse extends AbstractResponse
                 /**
                  * @return SimpleXMLElement[]
                  */
-                function () use ($reversal_type, $transaction_reference) {
-                    $invoices = $this->getInvoices();
+                function () use ($invoices, $reversal_type, $transaction_reference) {
                     if ($invoices === null) {
                         return array();
                     }
@@ -688,8 +694,7 @@ class ExtendedResponse extends AbstractResponse
                 /**
                  * @return SimpleXMLElement|null
                  */
-                function () use ($transaction_reference) {
-                    $invoices = $this->getInvoices();
+                function () use ($invoices, $transaction_reference) {
                     if ($invoices === null) {
                         return null;
                     }
