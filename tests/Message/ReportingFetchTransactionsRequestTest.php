@@ -3,6 +3,11 @@
 namespace Omnipay\BlueSnap\Message;
 
 use DateTime;
+use DateTimeZone;
+use Exception;
+use Omnipay\BlueSnap\Chargeback;
+use Omnipay\BlueSnap\Constants;
+use Omnipay\BlueSnap\Gateway;
 use Omnipay\BlueSnap\Test\Framework\DataFaker;
 use Omnipay\BlueSnap\Test\Framework\OmnipayBlueSnapTestCase;
 
@@ -48,21 +53,49 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
     }
 
     /**
+     * @param array $params
+     * @param string $expected
+     * @dataProvider provideTestEndPointParameters
      * @return void
      */
-    public function testEndpoint()
+    public function testEndpoint($params, $expected)
     {
-        $this->request->setStartTime($this->startTime);
-        $this->request->setEndTime($this->endTime);
+        $gateway = new Gateway();
+        $gateway->setTestMode(true);
+        $request = $gateway->fetchTransactions($params);
 
         // @codingStandardsIgnoreStart
-        $this->assertSame(
-            'https://sandbox.bluesnap.com/services/2/report/TransactionDetail?period=CUSTOM'
-                . '&from_date=' . urlencode((string) $this->startTime->format('m/d/Y'))
-                . '&to_date=' . urlencode((string) $this->endTime->format('m/d/Y')),
-            $this->request->getEndpoint()
-        );
+        $this->assertSame($expected, $request->getEndpoint());
         // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * @return array[]
+     * @throws Exception
+     */
+    public function provideTestEndPointParameters()
+    {
+        $startTime = '01/01/2020';
+        $endTime = '01/01/2021';
+
+        $expected_end_point = AbstractRequest::TEST_ENDPOINT . '/services/2/report/TransactionDetail?period=CUSTOM'
+            . '&from_date=' . urlencode($startTime)
+            . '&to_date=' . urlencode($endTime);
+        $default_params = array(
+            'startTime' => new DateTime($startTime, new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+            'endTime' => new DateTime($endTime, new DateTimeZone(Constants::BLUESNAP_TIME_ZONE))
+        );
+
+        $params_with_chargeback = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_CHARGEBACK), $default_params);
+        $params_with_refund = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_REFUND), $default_params);
+        $params_with_sale = array_merge(array('transactionType' => Constants::TRANSACTION_TYPE_SALE), $default_params);
+
+        return array(
+            array($default_params, $expected_end_point),
+            array($params_with_chargeback, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_CHARGEBACK),
+            array($params_with_refund, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_REFUND),
+            array($params_with_sale, $expected_end_point . '&transactionType=' . Constants::TRANSACTION_TYPE_SALE)
+        );
     }
 
     /**
@@ -190,5 +223,99 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $this->assertFalse($response->isRedirect());
         $this->assertSame('400', $response->getCode());
         $this->assertSame('Invalid Date Range', $response->getErrorMessage());
+    }
+
+    /**
+     * @psalm-suppress PossiblyNullArrayAccess
+     * @return void
+     */
+    public function testSendSuccessForRefunds()
+    {
+        $this->request->setStartTime($this->startTime);
+        $this->request->setEndTime($this->endTime);
+        $this->request->setTransactionType(Constants::TRANSACTION_TYPE_REFUND);
+
+        $currency = $this->faker->currency();
+        $sale_transaction_reference = $this->faker->transactionReference();
+        $refund_transaction_reference = $this->faker->transactionReference();
+        $refund_date = $this->faker->datetime();
+        $sale_date = $this->faker->datetime();
+
+        $this->setMockHttpResponse('ReportingFetchTransactionsWithReversalSuccess.txt', array(
+            'SALE_TRANSACTION_REFERENCE' => $sale_transaction_reference,
+            'REVERSAL_TRANSACTION_REFERENCE' => $refund_transaction_reference,
+            'SALE_DATE' => $sale_date->format('m/d/Y'),
+            'REVERSAL_DATE' => $refund_date->format('m/d/Y'),
+            'REVERSAL_TYPE' => Constants::TRANSACTION_TYPE_REFUND,
+            'CURRENCY' => $currency,
+            'AMOUNT' => $this->faker->monetaryAmount($currency),
+            'CUSTOMER_REFERENCE' => $this->faker->customerReference(),
+            'CUSTOM_0_0' => $this->faker->customParameter(),
+            'CUSTOM_1_0' => $this->faker->customParameter()
+
+        ));
+
+        $response = $this->request->send();
+        $this->assertCount(2, $response->getTransactions());
+        $this->assertEmpty($response->getChargebacks());
+        $refunds = $response->getRefunds();
+        $this->assertCount(1, $refunds);
+
+        /** @var Refund $refund */
+        $refund = $refunds[0];
+        $this->assertInstanceOf('\Omnipay\BlueSnap\Message\Refund', $refund);
+        $this->assertSame($sale_transaction_reference, $refund->getTransactionReference());
+        $this->assertSame($refund_transaction_reference, $refund->getRefundReference());
+
+        /** @var DateTime $actual_date */
+        $actual_date =  $refund->getTime();
+        $this->assertSame($refund_date->format('m/d/Y'), $actual_date->format('m/d/Y'));
+    }
+
+    /**
+     * @psalm-suppress PossiblyNullArrayAccess
+     * @return void
+     */
+    public function testSendSuccessForChargebacks()
+    {
+        $this->request->setStartTime($this->startTime);
+        $this->request->setEndTime($this->endTime);
+        $this->request->setTransactionType(Constants::TRANSACTION_TYPE_CHARGEBACK);
+
+        $currency = $this->faker->currency();
+        $sale_transaction_reference = $this->faker->transactionReference();
+        $refund_transaction_reference = $this->faker->transactionReference();
+        $chargeback_date = $this->faker->datetime();
+        $sale_date = $this->faker->datetime();
+
+        $this->setMockHttpResponse('ReportingFetchTransactionsWithReversalSuccess.txt', array(
+            'SALE_TRANSACTION_REFERENCE' => $sale_transaction_reference,
+            'REVERSAL_TRANSACTION_REFERENCE' => $refund_transaction_reference,
+            'SALE_DATE' => $sale_date->format('m/d/Y'),
+            'REVERSAL_DATE' => $chargeback_date->format('m/d/Y'),
+            'REVERSAL_TYPE' => Constants::TRANSACTION_TYPE_CHARGEBACK,
+            'CURRENCY' => $currency,
+            'AMOUNT' => $this->faker->monetaryAmount($currency),
+            'CUSTOMER_REFERENCE' => $this->faker->customerReference(),
+            'CUSTOM_0_0' => $this->faker->customParameter(),
+            'CUSTOM_1_0' => $this->faker->customParameter()
+
+        ));
+
+        $response = $this->request->send();
+        $this->assertCount(2, $response->getTransactions());
+        $this->assertEmpty($response->getRefunds());
+        $chargebacks = $response->getChargebacks();
+        $this->assertCount(1, $chargebacks);
+
+        /** @var Chargeback $chargeback */
+        $chargeback = $chargebacks[0];
+        $this->assertInstanceOf('\Omnipay\BlueSnap\Chargeback', $chargeback);
+        $this->assertSame($sale_transaction_reference, $chargeback->getTransactionReference());
+        $this->assertSame($refund_transaction_reference, $chargeback->getChargebackReference());
+
+        /** @var DateTime $actual_date */
+        $actual_date =  $chargeback->getProcessorReceivedTime();
+        $this->assertSame($chargeback_date->format('m/d/Y'), $actual_date->format('m/d/Y'));
     }
 }

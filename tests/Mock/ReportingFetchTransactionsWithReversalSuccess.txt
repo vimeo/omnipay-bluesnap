@@ -1,0 +1,123 @@
+HTTP/1.1 200 OK
+Date: Wed, 26 Apr 2017 21:12:09 GMT
+Server: BlueSnap-Sandbox-UK
+Set-Cookie: JSESSIONID=1234567890ABCDEF1234567890ABCDEF; Path=/services/; Secure; HttpOnly
+page-size: 5000
+total-row-count: 10
+start-row: 1
+Vary: Accept-Encoding
+Transfer-Encoding: chunked
+Content-Type: application/json;charset=utf-8
+F5: /Common/Sandbox-vlan10-https 10.11.10.50%10 443
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+
+{
+  "data": [
+    {
+      "Payment ID": "12345",
+      "Invoice ID": "[SALE_TRANSACTION_REFERENCE]",
+      "Original Invoice ID": "[SALE_TRANSACTION_REFERENCE]",
+      "Merchant Transaction ID": "",
+      "Transaction Type": "Sale",
+      "Transaction Date": "[SALE_DATE]",
+      "Purchase Date": "",
+      "Refund / Chargeback Reason": "",
+      "Product": "Product Name",
+      "Product ID": "123456",
+      "Contract": "Contract Name",
+      "Contract ID": "1234567",
+      "SKU Type": "Recurring contract",
+      "Payment Frequency": "Yearly",
+      "Recurring Cycle Group": "First Time",
+      "Recurring Cycle Number": "1",
+      "Payment Type": "Credit Card",
+      "Card Network": "Unknown",
+      "Qty": "1",
+      "Auth. Currency": "[CURRENCY]",
+      "Merchant Sales (Auth Currency)": "[AMOUNT]",
+      "Merchant Sales (USD)": "123.45",
+      "Shopper ID": "[CUSTOMER_REFERENCE]",
+      "Shopper First Name": "First",
+      "Shopper Last Name": "Last",
+      "Shopper Email": "test@example.com",
+      "Shopper Country": "Japan",
+      "Company Name": "",
+      "Vendor ID": "",
+      "Vendor Name": "",
+      "Soft Descriptor": "BLS*Company Name",
+      "Custom Field 1": "[CUSTOM_0_0]",
+      "Custom Field 2": "[CUSTOM_1_0]",
+      "Custom Field 3": "",
+      "Custom Field 4": "",
+      "Custom Field 5": "",
+      "Custom Field 6": "",
+      "Custom Field 7": "",
+      "Custom Field 8": "",
+      "Custom Field 9": "",
+      "Custom Field 10": ""
+    },
+    {
+      "Payment ID": "12345",
+      "Invoice ID": "[REVERSAL_TRANSACTION_REFERENCE]",
+      "Original Invoice ID": "[SALE_TRANSACTION_REFERENCE]",
+      "Merchant Transaction ID": "",
+      "Transaction Type": "[REVERSAL_TYPE]",
+      "Transaction Date": "[REVERSAL_DATE]",
+      "Purchase Date": "",
+      "Refund / Chargeback Reason": "",
+      "Product": "Product Name",
+      "Product ID": "123456",
+      "Contract": "Contract Name",
+      "Contract ID": "1234567",
+      "SKU Type": "One-time contract",
+      "Payment Frequency": "Once",
+      "Recurring Cycle Group": "First Time",
+      "Recurring Cycle Number": "1",
+      "Payment Type": "Credit Card",
+      "Card Network": "Unknown",
+      "Qty": "1",
+      "Auth. Currency": "[CURRENCY]",
+      "Merchant Sales (Auth Currency)": "[AMOUNT]",
+      "Merchant Sales (USD)": "12.34",
+      "Shopper ID": "[CUSTOMER_REFERENCE]",
+      "Shopper First Name": "First",
+      "Shopper Last Name": "Last",
+      "Shopper Email": "test@example.org",
+      "Shopper Country": "Japan",
+      "Company Name": "",
+      "Vendor ID": "",
+      "Vendor Name": "",
+      "Soft Descriptor": "BLS*Company Name",
+      "Custom Field 1": "[CUSTOM_0_0]",
+      "Custom Field 2": "[CUSTOM_1_0]",
+      "Custom Field 3": "",
+      "Custom Field 4": "",
+      "Custom Field 5": "",
+      "Custom Field 6": "",
+      "Custom Field 7": "",
+      "Custom Field 8": "",
+      "Custom Field 9": "",
+      "Custom Field 10": ""
+    }
+  ],
+  "title": "Transaction Detail",
+  "params": [
+    {
+      "name": "Period",
+      "value": "CUSTOM"
+    },
+    {
+      "name": "From date",
+      "value": "[START_TIME]"
+    },
+    {
+      "name": "To date",
+      "value": "[END_TIME]"
+    },
+    {
+      "name": "Merchant Id",
+      "value": "123456"
+    }
+  ],
+  "date_range": "[START_TIME] - [END_TIME]"
+}

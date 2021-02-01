@@ -15,9 +15,6 @@ test:
 psalm:
 	vendor/bin/psalm
 
-check:
-	vendor/bin/psalm && vendor/bin/phpunit
-
 # Install
 
 install: install_with_psalm

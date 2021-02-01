@@ -74,14 +74,41 @@ abstract class ReportingAbstractRequest extends AbstractRequest
     {
         $startTime = $this->getStartTime();
         $endTime = $this->getEndTime();
-        $endpoint = parent::getEndpoint() . '/report/' . $this->getReportName();
+        $transaction_type = $this->getTransactionType();
+        $params = array();
+
+        $endpoint = parent::getEndpoint() . '/report/' . (string) static::REPORT_NAME;
 
         // this should always be true
         if ($startTime && $endTime) {
-            $endpoint .= '?period=CUSTOM'
-                      . '&from_date=' . urlencode((string) $startTime->format('m/d/Y'))
-                      . '&to_date=' . urlencode((string) $endTime->format('m/d/Y'));
+            $params['period'] = 'CUSTOM';
+            $params['from_date'] = (string) $startTime->format('m/d/Y');
+            $params['to_date'] = (string) $endTime->format('m/d/Y');
         }
-        return $endpoint;
+
+        if ($transaction_type) {
+            $params['transactionType'] = $transaction_type;
+        }
+
+        $query_params = http_build_query($params);
+        return empty($params) ? $endpoint : $endpoint . '?' . $query_params;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return static
+     */
+    public function setTransactionType($value)
+    {
+        return $this->setParameter('transactionType', $value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransactionType()
+    {
+        return $this->getParameter('transactionType') ?: null;
     }
 }

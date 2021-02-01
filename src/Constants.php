@@ -18,4 +18,13 @@ class Constants
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_PUT = 'PUT';
     const HTTP_METHOD_POST = 'POST';
+
+    // These values are returned in the Extended API response
+    const REVERSAL_CHARGEBACK = 'CHARGEBACK';
+    const REVERSAL_REFUND = 'REFUND';
+
+    // Although similar to the above, these values are returned in the standard API using the reporting tools.
+    const TRANSACTION_TYPE_CHARGEBACK = 'Chargeback';
+    const TRANSACTION_TYPE_REFUND = 'Refund';
+    const TRANSACTION_TYPE_SALE = 'Sale';
 }

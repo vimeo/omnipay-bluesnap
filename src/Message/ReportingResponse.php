@@ -5,6 +5,7 @@ namespace Omnipay\BlueSnap\Message;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Omnipay\BlueSnap\Chargeback;
 use Omnipay\BlueSnap\Constants;
 use Omnipay\BlueSnap\Subscription;
 use Omnipay\BlueSnap\Transaction;
@@ -16,6 +17,16 @@ use Omnipay\BlueSnap\Transaction;
  */
 class ReportingResponse extends AbstractResponse
 {
+    /**
+     * @var Refund[]|null
+     */
+    protected $refunds;
+
+    /**
+     * @var Chargeback[]|null
+     */
+    protected $chargebacks;
+
     /**
      * Retrieves multiple transactions data from the response.
      *
@@ -33,16 +44,16 @@ class ReportingResponse extends AbstractResponse
             return null;
         }
         $transactions = array();
-        /**
-         * @var array<string, string>
-         */
+
+        /** @var array<string, string> */
         foreach ($this->data['data'] as $row) {
             $params = array(
-                'transactionReference' => $row['Invoice ID'],
-                'date' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
-                'currency' => $row['Auth. Currency'],
                 'amount' => $row['Merchant Sales (Auth Currency)'],
-                'customerReference' => $row['Shopper ID']
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'date' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'status' => $row['Transaction Type'], /** @see Types::TRANSACTION_* for possible values */
+                'transactionReference' => $row['Invoice ID'],
             );
             // grab all the custom parameters
             foreach ($row as $field => $value) {
@@ -83,5 +94,88 @@ class ReportingResponse extends AbstractResponse
             }
         }
         return $subscriptions;
+    }
+
+    /**
+     * @return Refund[]|null
+     * @throws Exception
+     */
+    public function getRefunds()
+    {
+        if (!empty($this->refunds)) {
+            return $this->refunds;
+        }
+
+        if (!is_array($this->data) || !isset($this->data['data'])) {
+            return null;
+        }
+
+         /** @var array<string, string> $row */
+        foreach ($this->data['data'] as $row) {
+            /**
+             * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_REFUND) was used
+             * then these should always be of type 'Refund'. This check is added as extra layer of safety to
+             * ensure only transactions with chargebacks are included. If no transaction type is used in the request,
+             * all transaction types (sales, refunds and chargebacks) will returned.
+             */
+            if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_REFUND) {
+                continue;
+            }
+            $params = array(
+                'amount' => $row['Merchant Sales (Auth Currency)'],
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'time' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
+                'reason' => $row['Refund / Chargeback Reason'],
+                'refundReference' => $row['Invoice ID'],
+                'transactionReference' => $row['Original Invoice ID'],
+            );
+
+            $this->refunds[] = new Refund($params);
+        }
+        return $this->refunds;
+    }
+
+    /**
+     * @return Chargeback[]|null
+     * @throws Exception
+     */
+    public function getChargebacks()
+    {
+        if (!empty($this->chargebacks)) {
+            return $this->chargebacks;
+        }
+
+        if (!is_array($this->data) || !isset($this->data['data'])) {
+            return null;
+        }
+
+         /** @var array<string, string> $row */
+        foreach ($this->data['data'] as $row) {
+            /**
+             * If ReportingFetchTransactionsRequest::setTransactionType(Constants::TRANSACTION_TYPE_CHARGEBACK) was
+             * used then these should always be of type 'Chargeback'. This check is added as extra layer of safety to
+             * ensure only refunded transactions are included. If no transaction type is used in the request all
+             * transaction types (sales, refunds and chargebacks) will returned,
+             */
+            if ($row['Transaction Type'] !== Constants::TRANSACTION_TYPE_CHARGEBACK) {
+                continue;
+            }
+
+            $params = array(
+                'amount' => $row['Merchant Sales (Auth Currency)'],
+                'currency' => $row['Auth. Currency'],
+                'customerReference' => $row['Shopper ID'],
+                'processorReceivedTime' => new DateTime(
+                    $row['Transaction Date'],
+                    new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)
+                ),
+                'reason' => $row['Refund / Chargeback Reason'],
+                'chargebackReference' => $row['Invoice ID'],
+                'transactionReference' => $row['Original Invoice ID'],
+            );
+            $this->chargebacks[] = new Chargeback($params);
+        }
+        return $this->chargebacks;
     }
 }

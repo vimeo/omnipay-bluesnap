@@ -11,9 +11,11 @@ use Omnipay\Common\Exception\InvalidRequestException;
  *
  * Parameters:
  * - startTime (required): The beginning of the time range. The date must be in the 'Etc/GMT+8'
- * time zone. 'Etc/GMT+8' meants GMT-8, also known as PST. BlueSnap does not observe daylight
+ * time zone. 'Etc/GMT+8' means GMT-8, also known as PST. BlueSnap does not observe daylight
  * savings. BlueSnap also does not accept hours, minutes, or seconds. Dates only.
  * - endTime (required); The end of the time range. The same rules as above apply.
+ * - transactionType (optional): The type of transaction(s) that should be fetched. Valid values include:
+ *      'SALE', 'REFUND' or 'CHARGEBACK'
  *
  * <code>
  *   // Set up the gateway

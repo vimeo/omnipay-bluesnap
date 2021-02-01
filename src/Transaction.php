@@ -183,7 +183,6 @@ class Transaction
      *
      * @param \DateTime $value
      * @return static
-     * @throws InvalidRequestException if the time zone is incorrect
      */
     public function setDate($value)
     {
