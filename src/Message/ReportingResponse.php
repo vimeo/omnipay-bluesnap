@@ -128,6 +128,7 @@ class ReportingResponse extends AbstractResponse
                 'time' => new DateTime($row['Transaction Date'], new DateTimeZone(Constants::BLUESNAP_TIME_ZONE)),
                 'reason' => $row['Refund / Chargeback Reason'],
                 'refundReference' => $row['Invoice ID'],
+                'refundId' => $row['Invoice ID'],
                 'transactionReference' => $row['Original Invoice ID'],
             );
 
