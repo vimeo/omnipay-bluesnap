@@ -266,6 +266,7 @@ class ReportingFetchTransactionsRequestTest extends OmnipayBlueSnapTestCase
         $this->assertInstanceOf('\Omnipay\BlueSnap\Message\Refund', $refund);
         $this->assertSame($sale_transaction_reference, $refund->getTransactionReference());
         $this->assertSame($refund_transaction_reference, $refund->getRefundReference());
+        $this->assertSame($refund_transaction_reference, $refund->getRefundId());
 
         /** @var DateTime $actual_date */
         $actual_date =  $refund->getTime();

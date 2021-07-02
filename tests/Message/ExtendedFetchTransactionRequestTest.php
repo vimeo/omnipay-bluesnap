@@ -286,6 +286,7 @@ class ExtendedFetchTransactionRequestTest extends OmnipayBlueSnapTestCase
         $this->assertSame($amount, $refund->getAmount());
         $this->assertSame($currency, $refund->getCurrency());
         $this->assertSame($reversal_reference, $refund->getRefundReference());
+        $this->assertSame($reversal_reference, $refund->getRefundId());
         $this->assertSame($reversal_date, $refund->getTime());
         $this->assertSame($this->transactionReference, $refund->getTransactionReference());
     }
