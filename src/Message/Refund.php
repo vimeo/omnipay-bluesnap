@@ -81,7 +81,7 @@ class Refund
      * This value will match refundReference. In other gateways the refund id would contain the client-specified
      * refund id but BlueSnap does not support this.
      *
-     * @return null|string
+     * @return string
      */
     public function getRefundId()
     {
@@ -102,7 +102,7 @@ class Refund
     /**
      * Get the refund reference
      *
-     * @return null|string
+     * @return string
      */
     public function getRefundReference()
     {
