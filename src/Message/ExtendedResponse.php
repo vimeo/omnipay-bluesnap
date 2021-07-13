@@ -503,6 +503,7 @@ class ExtendedResponse extends AbstractResponse
                         'amount' => (string) $financial_transaction->amount,
                         'currency' => (string) $financial_transaction->currency,
                         'refundReference' => (string) $invoice->{'invoice-id'},
+                        'refundId' => (string) $invoice->{'invoice-id'},
                         'time' => (string) $financial_transaction->{'date-created'},
                         'transactionReference' => (string) $invoice->{'original-invoice-id'},
                     );
