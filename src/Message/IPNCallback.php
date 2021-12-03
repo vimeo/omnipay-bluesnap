@@ -107,7 +107,7 @@ class IPNCallback
 
     /**
      * Is this a AUTH_ONLY_SINGLE_CHARGE IPN? This IPN is fired when
-     * a result of zero dollar transaction is made.
+     * a zero dollar transaction is made.
      *
      * @return bool
      */
