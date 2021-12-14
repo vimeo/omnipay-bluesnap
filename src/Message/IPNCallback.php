@@ -107,14 +107,33 @@ class IPNCallback
 
     /**
      * Is this a AUTH_ONLY_SINGLE_CHARGE IPN? This IPN is fired when
-     * a zero dollar transaction is made.
+     * a zero dollar transaction is made for plan type of
+     * standard subscription.  Currently a product with a contract for a standard
+     * subscription only will only emit an auth charge IPN with no subscription info.
+     * https://bluesnap.zendesk.com/hc/en-us/requests/1444951
      *
+     * https://support.bluesnap.com/docs/setting-up-a-standard-subscription-plan
+     * https://support.bluesnap.com/docs/ipns-name-reference#AUTH_ONLY_SINGLE_CHARGE
      * @return bool
      */
     public function isAuthOnlySingleCharge()
     {
         return $this->getIPNType() === 'AUTH_ONLY_SINGLE_CHARGE';
     }
+
+    /**
+     * Is this a AUTH_ONLY_SINGLE_CHARGE IPN? This IPN is fired when
+     * a zero dollar transaction is made for plan type of standard subscription with trial.
+     *
+     * https://support.bluesnap.com/docs/ipns-name-reference#AUTH_ONLY
+     * https://support.bluesnap.com/docs/setting-up-a-standard-subscription-plan
+     * @return bool
+     */
+    public function isAuthOnly()
+    {
+        return $this->getIPNType() === 'AUTH_ONLY';
+    }
+
 
     /**
      * Is this a CANCELLATION IPN? Cancellation IPNs are fired when a recurring charge
