@@ -110,6 +110,7 @@ class IPNCallback
      * a zero dollar transaction is made for plan type of
      * standard subscription.  Currently a product with a contract for a standard
      * subscription only will only emit an auth charge IPN with no subscription info.
+     * https://bluesnap.zendesk.com/hc/en-us/requests/1444951
      *
      * https://support.bluesnap.com/docs/setting-up-a-standard-subscription-plan
      * https://support.bluesnap.com/docs/ipns-name-reference#AUTH_ONLY_SINGLE_CHARGE
