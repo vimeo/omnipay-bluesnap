@@ -107,7 +107,7 @@ class IPNCallback
 
     /**
      * Is this a AUTH_ONLY_SINGLE_CHARGE IPN? This IPN is fired when
-     * a zero dollar transaction is made.
+     * a zero dollar transaction is made for standard subscription.
      *
      * @return bool
      */
@@ -115,6 +115,18 @@ class IPNCallback
     {
         return $this->getIPNType() === 'AUTH_ONLY_SINGLE_CHARGE';
     }
+
+    /**
+     * Is this a AUTH_ONLY_SINGLE_CHARGE IPN? This IPN is fired when
+     * a zero dollar transaction is made for standard subscription with trial.
+     *
+     * @return bool
+     */
+    public function isAuthOnly()
+    {
+        return $this->getIPNType() === 'AUTH_ONLY';
+    }
+
 
     /**
      * Is this a CANCELLATION IPN? Cancellation IPNs are fired when a recurring charge

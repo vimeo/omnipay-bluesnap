@@ -88,6 +88,19 @@ class IPNCallbackTest extends OmnipayBlueSnapTestCase
     /**
      * @return void
      */
+    public function testIsAuthOnly()
+    {
+        $callback = new IPNCallback($this->queryString . '&transactionType=AUTH_ONLY');
+        $this->assertTrue($callback->isAuthOnly());
+        $callback = new IPNCallback($this->faker->url() . '?transactionType=AUTH_ONLY&' . $this->queryString);
+        $this->assertTrue($callback->isAuthOnly());
+        $callback = new IPNCallback($this->queryString . '&transactionType=CANCELLATION');
+        $this->assertFalse($callback->isAuthOnly());
+    }
+
+    /**
+     * @return void
+     */
     public function testIsCancellation()
     {
         $callback = new IPNCallback($this->queryString . '&transactionType=CANCELLATION');
